@@ -1,9 +1,9 @@
 "use server"
 
 import prisma from "@/lib/prisma"
-import { createPakasirTransaction } from "@/src/lib/pakasir"
+import { createPakasirTransaction, type CreateTransactionResult } from "@/src/lib/pakasir"
 
-export async function createPaymentCheckout(paymentId: string) {
+export async function createPaymentCheckout(paymentId: string): Promise<CreateTransactionResult> {
   try {
     const payment = await prisma.payment.findUnique({
       where: { id: paymentId },

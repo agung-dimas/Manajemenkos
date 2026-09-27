@@ -9,7 +9,7 @@ interface CreateTransactionParams {
   method?: "payment_link" | "qris" | "bri_va" | "bni_va" | "cimb_niaga_va" | "permata_va" | "maybank_va"
 }
 
-interface CreateTransactionResult {
+export interface CreateTransactionResult {
   success: boolean
   paymentLink?: string
   txnId?: string
