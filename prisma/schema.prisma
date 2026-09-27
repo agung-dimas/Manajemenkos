@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  PETUGAS
+}
+
+enum RoomStatus {
+  KOSONG
+  TERISI
+  MAINTENANCE
+}
+
+enum TenantStatus {
+  AKTIF
+  TIDAK_AKTIF
+}
+
+enum PaymentStatus {
+  DRAFT
+  TERKIRIM
+  BELUM_BAYAR
+  SEBAGIAN
+  LUNAS
+  TERLAMBAT
+}
+
+model User {
+  id            String         @id @default(uuid()) // Tersinkronisasi dengan Supabase Auth UUID
+  email         String         @unique
+  name          String
+  role          Role           @default(PETUGAS)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  ActivityLog   ActivityLog[]
+  Notification  Notification[]
+}
+
+model Room {
+  id          String         @id @default(uuid())
+  number      String         @unique
+  floor       Int
+  price       Float
+  status      RoomStatus     @default(KOSONG)
+  size        String?        // Contoh: "3x4"
+  description String?        @db.Text
+  photos      String[]       // Array URL foto dari Supabase Storage
+  facilities  Facility[]     // Relasi Many-to-Many implisit
+  tenants     Tenant[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model Facility {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  icon        String?  // Nama icon dari lucide-react (misal: "wifi")
+  rooms       Room[]   // Relasi Many-to-Many implisit
+  createdAt   DateTime @default(now())
+}
+
+model Tenant {
+  id         String       @id @default(uuid())
+  roomId     String
+  room       Room         @relation(fields: [roomId], references: [id])
+  name       String
+  email      String?
+  password   String?      // Password hash untuk login portal
+  phone      String
+  nik        String       @unique
+  gender     String
+  address    String       @db.Text
+  joinDate   DateTime
+  leaveDate  DateTime?
+  photo      String?      // URL foto profil
+  ktpPhoto   String?      // URL foto KTP
+  status     TenantStatus @default(AKTIF)
+  payments   Payment[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  tenantId      String
+  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  month         Int           // 1-12 (Bulan mulai sewa)
+  year          Int           // Tahun mulai sewa
+  durationMonth Int           @default(1) // Durasi bulan sewa (1, 3, 6, 12, atau kustom)
+  periodLabel   String?       // Format ringkas: contoh "Januari - Maret 2026 (3 Bulan)"
+  amount        Float
+  paidAmount    Float         @default(0) // Total terbayar sejauh ini (untuk cicilan)
+  paymentDate   DateTime?
+  method        String?       // Transfer, Cash, dll
+  status        PaymentStatus @default(BELUM_BAYAR)
+  proofUrl      String?       // Bukti transfer lunas
+  
+  // Relasi cicilan
+  installments  PaymentInstallment[]
+  
+  // Invoicing Fields
+  invoiceNumber String?       @unique
+  invoiceUrl    String?
+  invoiceSentAt DateTime?
+  lateFee       Float         @default(0)
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([tenantId, month, year])
+}
+
+model PaymentInstallment {
+  id          String   @id @default(uuid())
+  paymentId   String
+  payment     Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  amount      Float
+  paymentDate DateTime @default(now())
+  method      String?
+  proofUrl    String?
+  receiptUrl  String?
+  createdAt   DateTime @default(now())
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  action      String
+  description String   @db.Text
+  createdAt   DateTime @default(now())
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  title       String
+  message     String   @db.Text
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  title       String
+  amount      Float
+  category    String
+  date        DateTime
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
