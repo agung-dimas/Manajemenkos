@@ -3,6 +3,9 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/src/components/theme-provider"
 
+import { Suspense } from "react"
+import { NavigationProgressBar } from "@/components/layout/NavigationProgressBar"
+
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
@@ -24,6 +27,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <Suspense fallback={null}>
+            <NavigationProgressBar />
+          </Suspense>
           {children}
         </ThemeProvider>
       </body>

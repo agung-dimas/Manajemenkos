@@ -2,6 +2,7 @@ import Link from "next/link"
 import { getAllRooms } from "@/src/repositories/kamar.repo"
 import { removeRoom } from "@/src/actions/kamar.action"
 import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/ui/submit-button"
 import { Plus, Trash2, Pencil, Eye } from "lucide-react"
 import {
   Table,
@@ -106,9 +107,15 @@ export default async function KamarPage() {
                       </Button>
                     </Link>
                     <form action={removeRoom.bind(null, room.id)}>
-                      <Button type="submit" variant="ghost" size="icon" className="text-red-500 hover:text-red-600" title="Hapus Kamar">
+                      <SubmitButton
+                        variant="ghost"
+                        size="icon"
+                        pendingText=""
+                        className="text-red-500 hover:text-red-600"
+                        title="Hapus Kamar"
+                      >
                         <Trash2 className="h-4 w-4" />
-                      </Button>
+                      </SubmitButton>
                     </form>
                   </TableCell>
                 </TableRow>
@@ -171,10 +178,15 @@ export default async function KamarPage() {
                   </Button>
                 </Link>
                 <form action={removeRoom.bind(null, room.id)}>
-                  <Button type="submit" variant="ghost" size="sm" className="text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 gap-1.5 h-8">
+                  <SubmitButton
+                    variant="ghost"
+                    size="sm"
+                    pendingText=""
+                    className="text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 gap-1.5 h-8"
+                  >
                     <Trash2 className="h-4 w-4" />
                     <span>Hapus</span>
-                  </Button>
+                  </SubmitButton>
                 </form>
               </div>
             </Card>

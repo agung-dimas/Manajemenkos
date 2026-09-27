@@ -2,6 +2,7 @@ import Link from "next/link"
 import { getRoomById } from "@/src/repositories/kamar.repo"
 import { editRoom } from "@/src/actions/kamar.action"
 import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/ui/submit-button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -106,7 +107,7 @@ export default async function EditKamarPage({ params }: EditKamarPageProps) {
           <Link href="/dashboard/kamar" className="w-full sm:w-auto">
             <Button variant="outline" type="button" className="w-full">Batal</Button>
           </Link>
-          <Button type="submit" className="w-full sm:w-auto">Simpan Perubahan</Button>
+          <SubmitButton pendingText="Menyimpan Perubahan..." className="w-full sm:w-auto">Simpan Perubahan</SubmitButton>
         </div>
       </form>
     </div>

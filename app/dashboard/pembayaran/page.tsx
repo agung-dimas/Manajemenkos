@@ -2,6 +2,7 @@ import Link from "next/link"
 import { getAllPayments } from "@/src/repositories/pembayaran.repo"
 import { removePayment, markAsPaid, resendInvoice, addInstallment } from "@/src/actions/pembayaran.action"
 import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/ui/submit-button"
 import { Input } from "@/components/ui/input"
 import { Plus, Trash2, ExternalLink, CheckCircle, Send, Banknote } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -96,29 +97,29 @@ export default async function PembayaranPage() {
                             <input type="hidden" name="paymentId" value={payment.id} />
                             <input type="hidden" name="method" value="Transfer" />
                             <Input name="amount" type="number" placeholder="Nominal Cicil" className="w-24 h-8 text-xs px-2" required min="1" max={payment.amount - payment.paidAmount} />
-                            <Button type="submit" size="sm" variant="ghost" className="h-8 px-2 text-orange-600 hover:text-orange-700 hover:bg-orange-50">
+                            <SubmitButton type="submit" size="sm" variant="ghost" pendingText="" className="h-8 px-2 text-orange-600 hover:text-orange-700 hover:bg-orange-50" title="Simpan Cicilan">
                               <Banknote className="h-3.5 w-3.5" />
-                            </Button>
+                            </SubmitButton>
                           </form>
                           <form action={markAsPaid.bind(null, payment.id)}>
-                            <Button variant="outline" size="sm" className="h-8 gap-1 border-green-200 text-green-700 hover:bg-green-50" type="submit">
+                            <SubmitButton variant="outline" size="sm" pendingText="Memproses..." className="h-8 gap-1 border-green-200 text-green-700 hover:bg-green-50">
                               <CheckCircle className="h-3.5 w-3.5" /> <span className="hidden lg:inline">Lunas</span>
-                            </Button>
+                            </SubmitButton>
                           </form>
                         </>
                       )}
                       {payment.status !== "LUNAS" && (
                         <form action={resendInvoice.bind(null, payment.id)}>
-                          <Button variant="outline" size="sm" className="h-8 gap-1.5 border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-900/50 dark:text-blue-400 dark:hover:bg-blue-950/30" type="submit" title="Kirim Pengingat Tagihan (Email & WhatsApp)">
+                          <SubmitButton variant="outline" size="sm" pendingText="Mengirim..." className="h-8 gap-1.5 border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-900/50 dark:text-blue-400 dark:hover:bg-blue-950/30" title="Kirim Pengingat Tagihan (Email & WhatsApp)">
                             <Send className="h-3.5 w-3.5" />
                             <span className="hidden xl:inline text-xs">Ingatkan</span>
-                          </Button>
+                          </SubmitButton>
                         </form>
                       )}
                       <form action={removePayment.bind(null, payment.id)}>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500" type="submit">
+                        <SubmitButton variant="ghost" size="icon" pendingText="" className="h-8 w-8 text-red-500" title="Hapus Pembayaran">
                           <Trash2 className="h-4 w-4" />
-                        </Button>
+                        </SubmitButton>
                       </form>
                     </div>
                   </TableCell>
@@ -203,9 +204,9 @@ export default async function PembayaranPage() {
                     <input type="hidden" name="paymentId" value={payment.id} />
                     <input type="hidden" name="method" value="Transfer" />
                     <Input name="amount" type="number" placeholder="Nominal Cicil" className="h-9 flex-1 text-sm" required min="1" max={payment.amount - payment.paidAmount} />
-                    <Button type="submit" size="sm" variant="secondary" className="h-9 text-orange-600 hover:text-orange-700 hover:bg-orange-100">
+                    <SubmitButton type="submit" size="sm" variant="secondary" pendingText="Menyimpan..." className="h-9 text-orange-600 hover:text-orange-700 hover:bg-orange-100">
                       Cicil
-                    </Button>
+                    </SubmitButton>
                   </form>
                 </div>
               )}
@@ -213,22 +214,22 @@ export default async function PembayaranPage() {
               <div className="flex flex-wrap justify-end gap-2 border-t border-border/50 pt-3 mt-3">
                 {payment.status !== "LUNAS" && (
                   <form action={markAsPaid.bind(null, payment.id)}>
-                    <Button variant="outline" size="sm" className="border-green-200 text-green-700 hover:bg-green-50 gap-1.5 h-8" type="submit">
+                    <SubmitButton variant="outline" size="sm" pendingText="Memproses..." className="border-green-200 text-green-700 hover:bg-green-50 gap-1.5 h-8">
                       <CheckCircle className="h-4 w-4" /> Lunas
-                    </Button>
+                    </SubmitButton>
                   </form>
                 )}
                 {payment.status !== "LUNAS" && (
                   <form action={resendInvoice.bind(null, payment.id)}>
-                    <Button variant="outline" size="sm" className="border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-900/50 dark:text-blue-400 dark:hover:bg-blue-950/30 gap-1.5 h-8" type="submit" title="Kirim Pengingat Tagihan (Email & WhatsApp)">
+                    <SubmitButton variant="outline" size="sm" pendingText="Mengirim..." className="border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-900/50 dark:text-blue-400 dark:hover:bg-blue-950/30 gap-1.5 h-8" title="Kirim Pengingat Tagihan (Email & WhatsApp)">
                       <Send className="h-3.5 w-3.5" /> Ingatkan
-                    </Button>
+                    </SubmitButton>
                   </form>
                 )}
                 <form action={removePayment.bind(null, payment.id)}>
-                  <Button variant="ghost" size="sm" className="text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 gap-1.5 h-8" type="submit">
+                  <SubmitButton variant="ghost" size="sm" pendingText="" className="text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 gap-1.5 h-8">
                     <Trash2 className="h-4 w-4" />
-                  </Button>
+                  </SubmitButton>
                 </form>
               </div>
             </Card>

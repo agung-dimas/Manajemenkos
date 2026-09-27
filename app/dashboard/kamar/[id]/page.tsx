@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { getRoomDetail } from "@/src/repositories/kamar.repo"
 import { removeRoom } from "@/src/actions/kamar.action"
 import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/ui/submit-button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -94,14 +95,14 @@ export default async function KamarDetailPage({ params }: KamarDetailPageProps) 
             </Button>
           </Link>
           <form action={removeRoom.bind(null, room.id)}>
-            <Button
-              type="submit"
+            <SubmitButton
               variant="outline"
               size="sm"
+              pendingText=""
               className="text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 border-red-200 dark:border-red-900/50"
             >
               <Trash2 className="h-4 w-4" />
-            </Button>
+            </SubmitButton>
           </form>
         </div>
       </div>

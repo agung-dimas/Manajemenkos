@@ -2,6 +2,7 @@ import Link from "next/link"
 import { getAllTenants } from "@/src/repositories/penghuni.repo"
 import { removeTenant, checkoutTenant } from "@/src/actions/penghuni.action"
 import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/ui/submit-button"
 import { Plus, Trash2, LogOut, CheckCircle2, AlertCircle, Calendar, CreditCard } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -183,17 +184,27 @@ export default async function PenghuniPage(props: any) {
                           <form action={checkoutTenant}>
                             <input type="hidden" name="id" value={tenant.id} />
                             <input type="hidden" name="roomId" value={tenant.roomId} />
-                            <Button variant="outline" size="sm" className="h-8 gap-1 border-amber-200 text-amber-700 hover:bg-amber-50" type="submit">
+                            <SubmitButton
+                              variant="outline"
+                              size="sm"
+                              pendingText="Checkout..."
+                              className="h-8 gap-1 border-amber-200 text-amber-700 hover:bg-amber-50"
+                            >
                               <LogOut className="h-3.5 w-3.5" /> <span className="hidden lg:inline">Checkout</span>
-                            </Button>
+                            </SubmitButton>
                           </form>
                         )}
                         <form action={removeTenant}>
                           <input type="hidden" name="id" value={tenant.id} />
                           <input type="hidden" name="roomId" value={tenant.roomId} />
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500" type="submit">
+                          <SubmitButton
+                            variant="ghost"
+                            size="icon"
+                            pendingText=""
+                            className="h-8 w-8 text-red-500"
+                          >
                             <Trash2 className="h-4 w-4" />
-                          </Button>
+                          </SubmitButton>
                         </form>
                       </div>
                     </TableCell>
@@ -300,17 +311,27 @@ export default async function PenghuniPage(props: any) {
                     <form action={checkoutTenant}>
                       <input type="hidden" name="id" value={tenant.id} />
                       <input type="hidden" name="roomId" value={tenant.roomId} />
-                      <Button variant="outline" size="sm" className="border-amber-200 text-amber-700 hover:bg-amber-50 gap-1.5 h-8" type="submit">
+                      <SubmitButton
+                        variant="outline"
+                        size="sm"
+                        pendingText="Checkout..."
+                        className="border-amber-200 text-amber-700 hover:bg-amber-50 gap-1.5 h-8"
+                      >
                         <LogOut className="h-4 w-4" /> Checkout
-                      </Button>
+                      </SubmitButton>
                     </form>
                   )}
                   <form action={removeTenant}>
                     <input type="hidden" name="id" value={tenant.id} />
                     <input type="hidden" name="roomId" value={tenant.roomId} />
-                    <Button variant="ghost" size="sm" className="text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 gap-1.5 h-8" type="submit">
+                    <SubmitButton
+                      variant="ghost"
+                      size="sm"
+                      pendingText=""
+                      className="text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 gap-1.5 h-8"
+                    >
                       <Trash2 className="h-4 w-4" />
-                    </Button>
+                    </SubmitButton>
                   </form>
                 </div>
               </Card>
