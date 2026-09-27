@@ -2,6 +2,30 @@ import prisma from "@/lib/prisma"
 import { Room, Prisma } from "@prisma/client"
 
 export async function getAllRooms() {
+  // Auto-sinkronisasi status kamar jika ada kamar TERISI yang tidak lagi memiliki penghuni AKTIF
+  try {
+    const staleRooms = await prisma.room.findMany({
+      where: {
+        status: "TERISI",
+        tenants: {
+          none: {
+            status: "AKTIF"
+          }
+        }
+      },
+      select: { id: true }
+    })
+
+    if (staleRooms.length > 0) {
+      await prisma.room.updateMany({
+        where: { id: { in: staleRooms.map(r => r.id) } },
+        data: { status: "KOSONG" }
+      })
+    }
+  } catch (err) {
+    console.error("Gagal sinkronisasi status kamar:", err)
+  }
+
   return await prisma.room.findMany({
     include: { facilities: true },
     orderBy: { createdAt: "desc" },

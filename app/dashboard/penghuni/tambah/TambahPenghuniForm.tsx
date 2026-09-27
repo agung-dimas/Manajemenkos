@@ -22,13 +22,18 @@ interface Room {
 
 interface TambahPenghuniFormProps {
   availableRooms: Room[]
+  defaultRoomId?: string
 }
 
-export function TambahPenghuniForm({ availableRooms }: TambahPenghuniFormProps) {
+export function TambahPenghuniForm({ availableRooms, defaultRoomId }: TambahPenghuniFormProps) {
   const [isPending, startTransition] = useTransition()
 
   // Selection state
-  const [selectedRoomId, setSelectedRoomId] = useState<string>(availableRooms[0]?.id || "")
+  const initialRoomId = (defaultRoomId && availableRooms.some(r => r.id === defaultRoomId))
+    ? defaultRoomId
+    : (availableRooms[0]?.id || "")
+
+  const [selectedRoomId, setSelectedRoomId] = useState<string>(initialRoomId)
   const [joinDate, setJoinDate] = useState<string>(() => new Date().toISOString().split("T")[0])
   const [durationMonth, setDurationMonth] = useState<number>(6)
   const [customDuration, setCustomDuration] = useState<string>("")

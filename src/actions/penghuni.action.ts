@@ -171,8 +171,10 @@ export async function addTenant(formData: FormData) {
 
   // Revalidate halaman terkait
   revalidatePath("/dashboard/penghuni")
+  revalidatePath("/dashboard/penghuni/tambah")
   revalidatePath("/dashboard/kamar")
   revalidatePath("/dashboard/pembayaran")
+  revalidatePath("/dashboard")
   redirect("/dashboard/penghuni")
 }
 
@@ -209,32 +211,50 @@ export async function removeTenant(formData: FormData) {
   })
   
   revalidatePath("/dashboard/penghuni")
+  revalidatePath("/dashboard/penghuni/tambah")
   revalidatePath("/dashboard/kamar")
   revalidatePath("/dashboard/pembayaran")
+  revalidatePath("/dashboard")
 }
 
 export async function checkoutTenant(formData: FormData) {
   const id = formData.get("id") as string
-  const roomId = formData.get("roomId") as string
+  let roomId = formData.get("roomId") as string
   const leaveDateStr = formData.get("leaveDate") as string
   
   const leaveDate = leaveDateStr ? new Date(leaveDateStr) : new Date()
 
+  // Ambil data tenant untuk memastikan roomId selalu akurat
+  if (!roomId && id) {
+    const tenant = await prisma.tenant.findUnique({
+      where: { id },
+      select: { roomId: true }
+    })
+    if (tenant) roomId = tenant.roomId
+  }
+
   // Ubah status Penghuni jadi TIDAK_AKTIF dan kosongkan Kamar
-  await prisma.$transaction([
-    prisma.tenant.update({
+  await prisma.$transaction(async (tx) => {
+    await tx.tenant.update({
       where: { id },
       data: {
         status: "TIDAK_AKTIF",
         leaveDate: leaveDate
       }
-    }),
-    prisma.room.update({ 
-      where: { id: roomId }, 
-      data: { status: "KOSONG" } 
     })
-  ])
+
+    if (roomId) {
+      await tx.room.update({ 
+        where: { id: roomId }, 
+        data: { status: "KOSONG" } 
+      })
+    }
+  })
 
   revalidatePath("/dashboard/penghuni")
+  revalidatePath("/dashboard/penghuni/tambah")
   revalidatePath("/dashboard/kamar")
+  revalidatePath("/dashboard/pembayaran")
+  revalidatePath("/dashboard")
 }
+

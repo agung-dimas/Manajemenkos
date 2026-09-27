@@ -72,6 +72,7 @@ export async function addRoom(formData: FormData) {
   })
 
   revalidatePath("/dashboard/kamar")
+  revalidatePath("/dashboard/penghuni/tambah")
   redirect("/dashboard/kamar")
 }
 
@@ -141,10 +142,12 @@ export async function editRoom(id: string, formData: FormData) {
   })
 
   revalidatePath("/dashboard/kamar")
+  revalidatePath("/dashboard/penghuni/tambah")
   redirect("/dashboard/kamar")
 }
 
 export async function removeRoom(id: string) {
   await deleteRoom(id)
   revalidatePath("/dashboard/kamar")
+  revalidatePath("/dashboard/penghuni/tambah")
 }

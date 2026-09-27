@@ -80,7 +80,7 @@ export default async function KamarDetailPage({ params }: KamarDetailPageProps) 
         {/* Action Buttons */}
         <div className="flex items-center gap-2 self-start sm:self-auto">
           {room.status === "KOSONG" && (
-            <Link href="/dashboard/penghuni/tambah">
+            <Link href={`/dashboard/penghuni/tambah?roomId=${room.id}`}>
               <Button size="sm" className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white">
                 <UserPlus className="h-4 w-4" />
                 <span>Daftarkan Penghuni</span>
@@ -365,7 +365,7 @@ export default async function KamarDetailPage({ params }: KamarDetailPageProps) 
                   Saat ini tidak ada penyewa aktif di kamar {room.number}. Anda dapat mendaftarkan penghuni baru sekarang.
                 </p>
               </div>
-              <Link href="/dashboard/penghuni/tambah">
+              <Link href={`/dashboard/penghuni/tambah?roomId=${room.id}`}>
                 <Button className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white">
                   <UserPlus className="h-4 w-4" /> Daftarkan Penghuni ke Kamar Ini
                 </Button>
