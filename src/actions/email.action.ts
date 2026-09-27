@@ -15,7 +15,7 @@ export async function getResendStatus() {
   return {
     configured: true,
     mode: "LIVE",
-    from: process.env.RESEND_FROM || "KOST BU WATI <onboarding@resend.dev>",
+    from: process.env.RESEND_FROM || "KOST BU WATI <billing@koswati.web.id>",
     message: "Resend Email API siap digunakan. Kuitansi & invoice akan dikirim ke email penghuni."
   }
 }

@@ -16,7 +16,7 @@ interface SendEmailParams {
 
 export async function sendEmail({ to, subject, html, attachments }: SendEmailParams): Promise<{ success: boolean; data?: any; error?: string }> {
   const apiKey = process.env.RESEND_API_KEY
-  const from = process.env.RESEND_FROM || "KOST BU WATI <onboarding@resend.dev>"
+  const from = process.env.RESEND_FROM || "KOST BU WATI <billing@koswati.web.id>"
 
   // Mode Simulasi jika API Key belum dipasang
   if (!apiKey) {
