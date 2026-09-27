@@ -107,10 +107,11 @@ export default async function PembayaranPage() {
                           </form>
                         </>
                       )}
-                      {payment.invoiceUrl && payment.status !== "LUNAS" && (
+                      {payment.status !== "LUNAS" && (
                         <form action={resendInvoice.bind(null, payment.id)}>
-                          <Button variant="outline" size="sm" className="h-8 gap-1 border-blue-200 text-blue-700 hover:bg-blue-50" type="submit" title="Kirim Ulang Tagihan WA">
+                          <Button variant="outline" size="sm" className="h-8 gap-1.5 border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-900/50 dark:text-blue-400 dark:hover:bg-blue-950/30" type="submit" title="Kirim Pengingat Tagihan (Email & WhatsApp)">
                             <Send className="h-3.5 w-3.5" />
+                            <span className="hidden xl:inline text-xs">Ingatkan</span>
                           </Button>
                         </form>
                       )}
@@ -217,10 +218,10 @@ export default async function PembayaranPage() {
                     </Button>
                   </form>
                 )}
-                {payment.invoiceUrl && payment.status !== "LUNAS" && (
+                {payment.status !== "LUNAS" && (
                   <form action={resendInvoice.bind(null, payment.id)}>
-                    <Button variant="outline" size="sm" className="border-blue-200 text-blue-700 hover:bg-blue-50 gap-1.5 h-8" type="submit">
-                      <Send className="h-4 w-4" /> Kirim WA
+                    <Button variant="outline" size="sm" className="border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-900/50 dark:text-blue-400 dark:hover:bg-blue-950/30 gap-1.5 h-8" type="submit" title="Kirim Pengingat Tagihan (Email & WhatsApp)">
+                      <Send className="h-3.5 w-3.5" /> Ingatkan
                     </Button>
                   </form>
                 )}

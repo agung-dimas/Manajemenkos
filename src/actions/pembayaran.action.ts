@@ -7,6 +7,7 @@ import prisma from "@/lib/prisma"
 import { PaymentStatus } from "@prisma/client"
 import { sendWhatsAppMessage } from "@/src/lib/whatsapp"
 import { generateReceiptPDF } from "@/src/lib/receipt"
+import { generateInvoicePDF } from "@/src/lib/invoice"
 import { getPeriodLabel } from "@/src/lib/period"
 import { sendReceiptEmail, sendInvoiceEmail, sendInstallmentReceiptEmail } from "@/src/lib/email"
 
@@ -226,7 +227,7 @@ export async function resendInvoice(id: string) {
     include: { tenant: { include: { room: true } } }
   })
 
-  if (!payment || !payment.invoiceUrl) throw new Error("Invoice tidak ditemukan")
+  if (!payment) throw new Error("Tagihan tidak ditemukan")
 
   try {
     const targetDate = new Date()
@@ -237,11 +238,45 @@ export async function resendInvoice(id: string) {
       maximumFractionDigits: 0
     }).format(payment.amount)
     
-    // Asumsi due date adalah tanggal joinDay (hanya untuk pesan teks, karena ini pengiriman ulang)
-    const dueDateStr = `Bulan ini` // Simplified for resend
-    
     const periodText = payment.periodLabel || `${MONTHS[payment.month - 1]} ${payment.year}`
-    const message = `Halo *${payment.tenant.name}*,\n\nBerikut adalah pengiriman ulang *Tagihan Pembayaran Kost Resmi* Anda untuk periode *${periodText}*.\n\nNo. Invoice: *${payment.invoiceNumber || '-'}*\nTotal Tagihan: *${formattedAmount}*\n\nSilakan lakukan pembayaran transfer ke rekening penampung resmi kost dan berikan konfirmasi apabila sudah mentransfer.\n\nTerima kasih.`
+    const invoiceNumber = payment.invoiceNumber || `INV-${payment.year}${String(payment.month).padStart(2, '0')}-${payment.id.substring(0, 4).toUpperCase()}`
+
+    let invoiceUrl = payment.invoiceUrl
+    let pdfBuffer: Buffer | undefined = undefined
+
+    try {
+      pdfBuffer = generateInvoicePDF({
+        invoiceNumber,
+        tenantName: payment.tenant.name,
+        roomNumber: payment.tenant.room.number,
+        monthName: MONTHS[payment.month - 1],
+        year: payment.year,
+        periodLabel: periodText,
+        amount: payment.amount,
+        dueDate: targetDate
+      })
+
+      if (!invoiceUrl) {
+        const supabase = await createClient()
+        const invoicePath = `invoices/invoice-${payment.id}.pdf`
+        const { data: uploadData } = await supabase.storage
+          .from("payments")
+          .upload(invoicePath, pdfBuffer, {
+            contentType: "application/pdf",
+            duplex: "half",
+            upsert: true
+          })
+
+        if (uploadData) {
+          const { data: publicData } = supabase.storage.from("payments").getPublicUrl(uploadData.path)
+          invoiceUrl = publicData.publicUrl
+        }
+      }
+    } catch (errPdf) {
+      console.error("Gagal generate invoice PDF:", errPdf)
+    }
+
+    const message = `Halo *${payment.tenant.name}*,\n\nBerikut adalah pengingat *Tagihan Pembayaran Kost Resmi* Anda untuk periode *${periodText}*.\n\nNo. Invoice: *${invoiceNumber}*\nTotal Tagihan: *${formattedAmount}*\n\nSilakan lakukan pembayaran transfer atau bayar online melalui portal penghuni.\n\nTerima kasih.`
     
     // 1. Kirim Email Tagihan via Resend
     if (payment.tenant.email) {
@@ -252,26 +287,27 @@ export async function resendInvoice(id: string) {
         period: periodText,
         amount: payment.amount,
         dueDate: targetDate,
-        invoiceNumber: payment.invoiceNumber || "INV-MANUAL",
-        invoiceUrl: payment.invoiceUrl
+        invoiceNumber,
+        invoicePdfBuffer: pdfBuffer,
+        invoiceUrl: invoiceUrl || undefined
       })
     }
 
     // 2. Kirim pesan WhatsApp (sebagai backup)
     let res = { success: false }
     if (payment.tenant.phone) {
-      res = await sendWhatsAppMessage(payment.tenant.phone, message, payment.invoiceUrl)
+      res = await sendWhatsAppMessage(payment.tenant.phone, message, invoiceUrl || undefined)
     }
 
-    if (res.success || payment.tenant.email) {
-      await prisma.payment.update({
-        where: { id },
-        data: {
-          invoiceSentAt: new Date(),
-          status: payment.status === "BELUM_BAYAR" ? "TERKIRIM" : payment.status
-        }
-      })
-    }
+    await prisma.payment.update({
+      where: { id },
+      data: {
+        invoiceNumber,
+        invoiceUrl: invoiceUrl || payment.invoiceUrl,
+        invoiceSentAt: new Date(),
+        status: payment.status === "BELUM_BAYAR" ? "TERKIRIM" : payment.status
+      }
+    })
   } catch (err) {
     console.error("Gagal mengirim ulang tagihan:", err)
   }
