@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils"
 import { getFonnteDeviceStatus } from "@/src/actions/whatsapp.action"
 import { getResendStatus, sendTestEmail } from "@/src/actions/email.action"
 import { getCurrentUser, updateUserProfile } from "@/src/actions/auth"
+import { ReminderSettingsCard } from "@/src/components/pengaturan/ReminderSettingsCard"
 
 export default function PengaturanPage() {
   const [activeTab, setActiveTab] = useState("menu")
@@ -687,52 +688,8 @@ export default function PengaturanPage() {
                         </Button>
                       </div>
 
-                      {/* Trigger Manual WhatsApp Reminder */}
-                      <div className="flex flex-col gap-4 p-4 border border-indigo-200/50 bg-indigo-50/30 dark:bg-indigo-950/10 rounded-md">
-                        <div className="space-y-0.5">
-                          <Label className="text-base font-semibold text-indigo-600 dark:text-indigo-400">Kirim Tagihan Pengingat Manual (H-3)</Label>
-                          <p className="text-sm text-muted-foreground">Pindai database secara manual dan kirim pesan WhatsApp pengingat untuk seluruh penghuni yang jatuh tempo dalam 3 hari.</p>
-                        </div>
-                        <Button
-                          type="button"
-                          onClick={async () => {
-                            try {
-                              const res = await fetch("/api/cron/payment-reminder", {
-                                credentials: "include"
-                              })
-                              const json = await res.json()
-                              alert(`Penyelarasan Selesai!\nJumlah pengingat dikirim: ${json.remindersSentCount || 0}`)
-                            } catch (err) {
-                              alert("Gagal mengirim pengingat manual")
-                            }
-                          }}
-                          className="w-full sm:w-auto self-start bg-indigo-600 hover:bg-indigo-500 text-white"
-                        >
-                          Jalankan Pemindaian Sekarang
-                        </Button>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 border rounded-md">
-                        <div className="space-y-0.5">
-                          <Label className="text-base font-semibold">Kirim Email Tagihan Otomatis</Label>
-                          <p className="text-sm text-muted-foreground">Kirim email tagihan otomatis ke penghuni H-3 tanggal jatuh tempo.</p>
-                        </div>
-                        <input type="checkbox" defaultChecked className="h-5 w-5 rounded border-zinc-300 accent-zinc-900 cursor-pointer" />
-                      </div>
-                      <div className="flex items-center justify-between p-4 border rounded-md">
-                        <div className="space-y-0.5">
-                          <Label className="text-base font-semibold">Notifikasi WhatsApp</Label>
-                          <p className="text-sm text-muted-foreground">Aktifkan pengiriman tanda terima pembayaran ke WhatsApp penghuni.</p>
-                        </div>
-                        <input type="checkbox" defaultChecked className="h-5 w-5 rounded border-zinc-300 accent-zinc-900 cursor-pointer" />
-                      </div>
-                      <div className="flex items-center justify-between p-4 border rounded-md">
-                        <div className="space-y-0.5">
-                          <Label className="text-base font-semibold">Log Aktivitas Petugas</Label>
-                          <p className="text-sm text-muted-foreground">Catat setiap transaksi penambahan/penghapusan kamar di riwayat log.</p>
-                        </div>
-                        <input type="checkbox" defaultChecked className="h-5 w-5 rounded border-zinc-300 accent-zinc-900 cursor-pointer" />
-                      </div>
+                      {/* Pengaturan Pengingat Jatuh Tempo & Uji Coba Langsung */}
+                      <ReminderSettingsCard />
                     </CardContent>
                     <CardFooter className="border-t px-6 py-4 justify-end">
                       <Button type="submit" className="w-full sm:w-auto" disabled={isSaving}>
