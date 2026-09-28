@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { User, Home, CreditCard, Bell, CheckCircle2, ChevronLeft, Loader2, Mail } from "lucide-react"
+import { User, Home, CreditCard, Bell, CheckCircle2, ChevronLeft, ChevronDown, Loader2, Mail } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getFonnteDeviceStatus } from "@/src/actions/whatsapp.action"
 import { getResendStatus, sendTestEmail } from "@/src/actions/email.action"
@@ -53,6 +53,7 @@ export default function PengaturanPage() {
   const [testEmail, setTestEmail] = useState("")
   const [isSendingTestEmail, setIsSendingTestEmail] = useState(false)
   const [testEmailResult, setTestEmailResult] = useState<{ success: boolean; message: string } | null>(null)
+  const [isTestEmailOpen, setIsTestEmailOpen] = useState(false)
 
   const handleSendTestEmail = async () => {
     if (!testEmail || !testEmail.includes("@")) {
@@ -223,7 +224,7 @@ export default function PengaturanPage() {
                 </div>
                 <div className="space-y-0.5">
                   <h3 className="font-bold text-sm">Notifikasi & Preferensi</h3>
-                  <p className="text-xs text-muted-foreground">Sesuaikan preferensi pengingat sistem dan WhatsApp.</p>
+                  <p className="text-xs text-muted-foreground">Sesuaikan preferensi pengingat sistem dan email tagihan.</p>
                 </div>
               </Card>
             </div>
@@ -518,61 +519,86 @@ export default function PengaturanPage() {
                               <p>Pengirim (From): <span className="text-foreground font-mono font-medium">{emailStatus.from || "KOST BU WATI <onboarding@resend.dev>"}</span></p>
                               <p>Keterangan: <span className="text-foreground">{emailStatus.message}</span></p>
                             </div>
-                            <div className="pt-2 border-t border-zinc-200/60 dark:border-zinc-800/60 space-y-2">
-                              <div className="flex items-center justify-between">
-                                <Label className="text-xs font-medium">Uji Coba Kirim Email</Label>
-                                <button
-                                  type="button"
-                                  onClick={() => setTestEmail("sistemaset.plnupdlpalembang@gmail.com")}
-                                  className="text-[11px] text-primary hover:underline"
-                                >
-                                  Gunakan Email Terdaftar Resend
-                                </button>
-                              </div>
-                              <div className="flex gap-2">
-                                <Input
-                                  type="email"
-                                  placeholder="sistemaset.plnupdlpalembang@gmail.com"
-                                  value={testEmail}
-                                  onChange={(e) => setTestEmail(e.target.value)}
-                                  className="h-8 text-xs max-w-xs"
-                                />
-                                <Button
-                                  type="button"
-                                  size="sm"
-                                  disabled={isSendingTestEmail}
-                                  onClick={handleSendTestEmail}
-                                  className="h-8 text-xs px-3"
-                                >
-                                  {isSendingTestEmail ? (
-                                    <>
-                                      <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
-                                      Mengirim...
-                                    </>
-                                  ) : (
-                                    "Kirim Email Uji Coba"
+                            <div className="pt-2 border-t border-zinc-200/60 dark:border-zinc-800/60">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setIsTestEmailOpen(!isTestEmailOpen)}
+                                className="w-full flex items-center justify-between h-9 px-3 text-xs font-medium text-foreground bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+                              >
+                                <span className="flex items-center gap-2">
+                                  <span>🧪</span>
+                                  <span>Menu Uji Coba Kirim Email (Resend)</span>
+                                </span>
+                                <ChevronDown
+                                  className={cn(
+                                    "h-4 w-4 text-muted-foreground transition-transform duration-200",
+                                    isTestEmailOpen && "rotate-180"
                                   )}
-                                </Button>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={fetchEmailStatus}
-                                  className="h-8 text-xs px-3"
-                                >
-                                  Segarkan
-                                </Button>
-                              </div>
-                              <div className="p-2.5 rounded bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200/50 text-[11px] text-blue-800 dark:text-blue-300 leading-relaxed">
-                                <strong>Catatan Akun Uji Coba Resend:</strong> Karena menggunakan domain gratis bawaan (<code>onboarding@resend.dev</code>), Resend membatasi penerima hanya ke email pemilik akun Anda (<code>sistemaset.plnupdlpalembang@gmail.com</code>). Untuk mengirim ke sembarang email publik, verifikasi domain Anda di <a href="https://resend.com/domains" target="_blank" rel="noreferrer" className="underline font-medium">resend.com/domains</a>.
-                              </div>
-                              {testEmailResult && (
-                                <p className={cn(
-                                  "text-xs font-medium mt-1.5",
-                                  testEmailResult.success ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"
-                                )}>
-                                  {testEmailResult.message}
-                                </p>
+                                />
+                              </Button>
+
+                              {isTestEmailOpen && (
+                                <div className="mt-3 p-3.5 rounded-lg border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/70 dark:bg-zinc-900/50 space-y-3">
+                                  <div className="flex items-center justify-between">
+                                    <Label className="text-xs font-medium">Kirim Sampel Tagihan ke Email</Label>
+                                    <button
+                                      type="button"
+                                      onClick={() => setTestEmail("sistemaset.plnupdlpalembang@gmail.com")}
+                                      className="text-[11px] text-primary hover:underline"
+                                    >
+                                      Gunakan Email Akun Resend
+                                    </button>
+                                  </div>
+                                  <div className="flex flex-col sm:flex-row gap-2">
+                                    <Input
+                                      type="email"
+                                      placeholder="Masukkan email penerima..."
+                                      value={testEmail}
+                                      onChange={(e) => setTestEmail(e.target.value)}
+                                      className="h-8 text-xs flex-1"
+                                    />
+                                    <div className="flex gap-2 shrink-0">
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        disabled={isSendingTestEmail}
+                                        onClick={handleSendTestEmail}
+                                        className="h-8 text-xs px-3"
+                                      >
+                                        {isSendingTestEmail ? (
+                                          <>
+                                            <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
+                                            Mengirim...
+                                          </>
+                                        ) : (
+                                          "Kirim Uji Coba"
+                                        )}
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={fetchEmailStatus}
+                                        className="h-8 text-xs px-3"
+                                      >
+                                        Segarkan
+                                      </Button>
+                                    </div>
+                                  </div>
+                                  <div className="p-2.5 rounded bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200/50 text-[11px] text-blue-800 dark:text-blue-300 leading-relaxed">
+                                    <strong>Catatan Domain Gratis Resend:</strong> Jika belum menggunakan custom domain terverifikasi, Resend hanya mengizinkan pengiriman ke email akun utama (<code>sistemaset.plnupdlpalembang@gmail.com</code>).
+                                  </div>
+                                  {testEmailResult && (
+                                    <p className={cn(
+                                      "text-xs font-medium mt-1.5",
+                                      testEmailResult.success ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"
+                                    )}>
+                                      {testEmailResult.message}
+                                    </p>
+                                  )}
+                                </div>
                               )}
                             </div>
                           </div>
@@ -585,79 +611,6 @@ export default function PengaturanPage() {
                             className="h-8 text-xs px-3"
                           >
                             Periksa Status Resend
-                          </Button>
-                        )}
-                      </div>
-
-                      {/* WhatsApp Device Connection Status */}
-                      <div className="p-4 border border-zinc-200 dark:border-zinc-800 rounded-md bg-zinc-50/50 dark:bg-zinc-900/30">
-                        <div className="flex items-center justify-between mb-3">
-                          <h3 className="text-sm font-semibold">Status WhatsApp Gateway (Fonnte)</h3>
-                          <span className="text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded bg-zinc-500/10 text-muted-foreground">
-                            Sekunder / Opsional
-                          </span>
-                        </div>
-                        {isLoadingWa ? (
-                          <p className="text-xs text-muted-foreground animate-pulse">Memeriksa status koneksi perangkat...</p>
-                        ) : waStatus ? (
-                          <div className="space-y-3">
-                            <div className="flex items-center gap-2">
-                              <span className={cn(
-                                "h-2.5 w-2.5 rounded-full",
-                                waStatus.mode === "SIMULATED"
-                                  ? "bg-amber-500 animate-pulse"
-                                  : waStatus.deviceStatus === "connect"
-                                    ? "bg-green-500 animate-pulse"
-                                    : "bg-red-500"
-                              )} />
-                              <span className="text-sm font-medium">
-                                {waStatus.mode === "SIMULATED"
-                                  ? "Mode Simulasi (Local Console)"
-                                  : waStatus.deviceStatus === "connect"
-                                    ? "Terhubung (Connected)"
-                                    : "Terputus (Disconnected)"
-                                }
-                              </span>
-                            </div>
-                            {waStatus.mode === "LIVE" && waStatus.success && (
-                              <div className="text-xs space-y-1 text-muted-foreground border-t border-zinc-200/60 dark:border-zinc-800/60 pt-2.5 mt-2.5">
-                                <p>Nama Perangkat: <span className="text-foreground font-medium">{waStatus.name || "-"}</span></p>
-                                <p>Nomor HP: <span className="text-foreground font-medium">+{waStatus.device || "-"}</span></p>
-                                <p>Kuota Harian: <span className="text-foreground font-medium">{waStatus.quota || 0} pesan</span></p>
-                                <p>Masa Aktif: <span className="text-foreground font-medium">{waStatus.expired || "-"}</span></p>
-                              </div>
-                            )}
-                            {waStatus.mode === "SIMULATED" && (
-                              <p className="text-xs text-muted-foreground border-t border-zinc-200/60 dark:border-zinc-800/60 pt-2.5 mt-2.5 leading-relaxed">
-                                Aplikasi berjalan dalam mode simulasi karena token Fonnte belum disetel di <code className="bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded font-mono">.env</code>. Semua notifikasi WhatsApp akan dicetak di terminal konsol server.
-                              </p>
-                            )}
-                            {waStatus.mode === "LIVE" && !waStatus.success && (
-                              <p className="text-xs text-red-500 border-t border-zinc-200/60 dark:border-zinc-800/60 pt-2.5 mt-2.5">
-                                Error: {waStatus.message || "Gagal menghubungi API Fonnte"}
-                              </p>
-                            )}
-                            <div className="pt-1.5">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={fetchWaStatus}
-                                className="h-8 text-xs px-3"
-                              >
-                                Segarkan Status
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={fetchWaStatus}
-                            className="h-8 text-xs px-3"
-                          >
-                            Periksa Koneksi
                           </Button>
                         )}
                       </div>

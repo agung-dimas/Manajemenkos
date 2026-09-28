@@ -115,9 +115,6 @@ export function ReminderSettingsCard() {
                 Atur jadwal jam pengiriman, hari mulai pengingat (H-berapa), dan frekuensi pengiriman tagihan otomatis.
               </CardDescription>
             </div>
-            <Badge variant="outline" className="text-primary border-primary/30 hidden sm:inline-flex">
-              Vercel Cron & Resend Ready
-            </Badge>
           </div>
         </CardHeader>
 
@@ -272,7 +269,7 @@ export function ReminderSettingsCard() {
                 Alat Uji Coba Pengingat Jatuh Tempo (Live Test Console)
               </CardTitle>
               <CardDescription className="text-xs">
-                Uji langsung pengiriman email tagihan sekarang juga tanpa perlu menunggu waktu cron Vercel.
+                Uji langsung pengiriman email tagihan sekarang.
               </CardDescription>
             </div>
             <Link href="/dashboard/pembayaran">
