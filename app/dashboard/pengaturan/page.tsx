@@ -641,15 +641,13 @@ export default function PengaturanPage() {
                         </Button>
                       </div>
 
-                      {/* Pengaturan Pengingat Jatuh Tempo & Uji Coba Langsung */}
-                      <ReminderSettingsCard />
                     </CardContent>
-                    <CardFooter className="border-t px-6 py-4 justify-end">
-                      <Button type="submit" className="w-full sm:w-auto" disabled={isSaving}>
-                        {isSaving ? "Menyimpan..." : "Simpan Perubahan"}
-                      </Button>
-                    </CardFooter>
                   </Card>
+
+                  {/* Pengaturan Pengingat Jatuh Tempo & Uji Coba Langsung */}
+                  <div className="mt-6">
+                    <ReminderSettingsCard />
+                  </div>
                 </div>
               </form>
             </div>

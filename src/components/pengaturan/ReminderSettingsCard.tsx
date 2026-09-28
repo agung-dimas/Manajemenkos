@@ -13,9 +13,7 @@ import {
   Send,
   Loader2,
   CheckCircle2,
-  AlertCircle,
   Mail,
-  MessageSquare,
   Sparkles,
   ExternalLink
 } from "lucide-react"
@@ -33,7 +31,7 @@ export function ReminderSettingsCard() {
     reminderHour: 8,
     autoDailyReminder: true,
     emailReminderActive: true,
-    whatsappReminderActive: true
+    whatsappReminderActive: false
   })
 
   const [isLoading, setIsLoading] = useState(true)
@@ -59,14 +57,16 @@ export function ReminderSettingsCard() {
     load()
   }, [])
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSave = async () => {
     setIsSaving(true)
     setSaveSuccess(false)
     try {
       const res = await saveReminderSettings(settings)
       if (res.success) {
         setSaveSuccess(true)
+        // Refresh local state to ensure it matches the database 100%
+        const fresh = await getReminderSettings()
+        setSettings(fresh)
         setTimeout(() => setSaveSuccess(false), 3000)
       } else {
         alert("Gagal menyimpan: " + (res.error || "Terjadi kesalahan"))
@@ -115,10 +115,13 @@ export function ReminderSettingsCard() {
                 Atur jadwal jam pengiriman, hari mulai pengingat (H-berapa), dan frekuensi pengiriman tagihan otomatis.
               </CardDescription>
             </div>
+            <Badge variant="outline" className="text-primary border-primary/30 hidden sm:inline-flex">
+              Vercel Cron & Resend Ready
+            </Badge>
           </div>
         </CardHeader>
 
-        <form onSubmit={handleSave}>
+        <div>
           <CardContent className="pt-6 space-y-5">
             {saveSuccess && (
               <div className="flex items-center gap-2 p-3 text-sm text-emerald-700 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg">
@@ -127,54 +130,54 @@ export function ReminderSettingsCard() {
               </div>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Mulai H-Berapa */}
-              <div className="space-y-2">
+              <div className="space-y-2 min-w-0">
                 <Label htmlFor="daysBefore" className="text-sm font-semibold flex items-center gap-1.5">
-                  <Calendar className="h-4 w-4 text-primary" />
-                  Mulai Mengingatkan (H- Berapa Hari)
+                  <Calendar className="h-4 w-4 text-primary shrink-0" />
+                  <span>Mulai Mengingatkan (H- Hari)</span>
                 </Label>
                 <Select
                   value={settings.reminderDaysBefore.toString()}
                   onValueChange={(val) => setSettings({ ...settings, reminderDaysBefore: parseInt(val) })}
                 >
-                  <SelectTrigger id="daysBefore" className="h-10">
+                  <SelectTrigger id="daysBefore" className="h-10 w-full min-w-0">
                     <SelectValue placeholder="Pilih H- Hari" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">1 Hari Sebelum Jatuh Tempo (H-1)</SelectItem>
-                    <SelectItem value="2">2 Hari Sebelum Jatuh Tempo (H-2)</SelectItem>
-                    <SelectItem value="3">3 Hari Sebelum Jatuh Tempo (H-3) — Rekomendasi</SelectItem>
-                    <SelectItem value="5">5 Hari Sebelum Jatuh Tempo (H-5)</SelectItem>
-                    <SelectItem value="7">7 Hari Sebelum Jatuh Tempo (H-7 / 1 Minggu)</SelectItem>
-                    <SelectItem value="10">10 Hari Sebelum Jatuh Tempo (H-10)</SelectItem>
+                    <SelectItem value="1">H-1 (1 Hari Sebelum)</SelectItem>
+                    <SelectItem value="2">H-2 (2 Hari Sebelum)</SelectItem>
+                    <SelectItem value="3">H-3 (3 Hari Sebelum — Standar)</SelectItem>
+                    <SelectItem value="5">H-5 (5 Hari Sebelum)</SelectItem>
+                    <SelectItem value="7">H-7 (7 Hari Sebelum / 1 Minggu)</SelectItem>
+                    <SelectItem value="10">H-10 (10 Hari Sebelum)</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-[11px] text-muted-foreground">
-                  Tagihan invoice dan pengingat pertama akan otomatis diterbitkan mulai rentang H- ini.
+                  Tagihan invoice dan pengingat pertama diterbitkan mulai rentang H- ini.
                 </p>
               </div>
 
               {/* Jam Pengiriman Otomatis */}
-              <div className="space-y-2">
+              <div className="space-y-2 min-w-0">
                 <Label htmlFor="reminderHour" className="text-sm font-semibold flex items-center gap-1.5">
-                  <Clock className="h-4 w-4 text-primary" />
-                  Jam Pengiriman Otomatis (WIB)
+                  <Clock className="h-4 w-4 text-primary shrink-0" />
+                  <span>Jam Pengiriman Otomatis (WIB)</span>
                 </Label>
                 <Select
                   value={settings.reminderHour.toString()}
                   onValueChange={(val) => setSettings({ ...settings, reminderHour: parseInt(val) })}
                 >
-                  <SelectTrigger id="reminderHour" className="h-10">
+                  <SelectTrigger id="reminderHour" className="h-10 w-full min-w-0">
                     <SelectValue placeholder="Pilih Jam" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="7">Pukul 07:00 WIB (Pagi Awal)</SelectItem>
-                    <SelectItem value="8">Pukul 08:00 WIB (Standar)</SelectItem>
-                    <SelectItem value="9">Pukul 09:00 WIB</SelectItem>
-                    <SelectItem value="10">Pukul 10:00 WIB</SelectItem>
-                    <SelectItem value="12">Pukul 12:00 WIB (Siang)</SelectItem>
-                    <SelectItem value="17">Pukul 17:00 WIB (Sore)</SelectItem>
+                    <SelectItem value="7">07:00 WIB (Pagi)</SelectItem>
+                    <SelectItem value="8">08:00 WIB (Standar)</SelectItem>
+                    <SelectItem value="9">09:00 WIB (Pagi)</SelectItem>
+                    <SelectItem value="10">10:00 WIB (Pagi)</SelectItem>
+                    <SelectItem value="12">12:00 WIB (Siang)</SelectItem>
+                    <SelectItem value="17">17:00 WIB (Sore)</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-[11px] text-muted-foreground">
@@ -204,48 +207,30 @@ export function ReminderSettingsCard() {
               </div>
             </div>
 
-            {/* Pilihan Saluran Notifikasi */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              <label className="flex items-center gap-3 p-3.5 rounded-lg border bg-card hover:bg-muted/20 cursor-pointer transition-colors">
-                <input
-                  type="checkbox"
-                  checked={settings.emailReminderActive}
-                  onChange={(e) => setSettings({ ...settings, emailReminderActive: e.target.checked })}
-                  className="h-4 w-4 rounded border-zinc-300 text-primary cursor-pointer"
-                />
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-md bg-blue-500/10 text-blue-600">
-                    <Mail className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <span className="text-sm font-semibold block">Email Resmi (Resend)</span>
-                    <span className="text-[11px] text-muted-foreground">Kirim PDF Invoice via billing@koswati.web.id</span>
-                  </div>
+            {/* Saluran Pengiriman: Email Resmi Resend */}
+            <div className="flex items-center justify-between p-3.5 rounded-lg border bg-muted/20">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-md bg-blue-500/10 text-blue-600">
+                  <Mail className="h-4 w-4" />
                 </div>
-              </label>
-
-              <label className="flex items-center gap-3 p-3.5 rounded-lg border bg-card hover:bg-muted/20 cursor-pointer transition-colors">
-                <input
-                  type="checkbox"
-                  checked={settings.whatsappReminderActive}
-                  onChange={(e) => setSettings({ ...settings, whatsappReminderActive: e.target.checked })}
-                  className="h-4 w-4 rounded border-zinc-300 text-primary cursor-pointer"
-                />
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-600">
-                    <MessageSquare className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <span className="text-sm font-semibold block">WhatsApp Notifikasi</span>
-                    <span className="text-[11px] text-muted-foreground">Pesan pengingat instan ke no HP penyewa</span>
-                  </div>
+                <div>
+                  <span className="text-sm font-semibold text-foreground block">Email Resmi Resend</span>
+                  <span className="text-[11px] text-muted-foreground">Kuitansi dan invoice PDF dikirim via billing@koswati.web.id</span>
                 </div>
-              </label>
+              </div>
+              <Badge variant="outline" className="text-emerald-600 border-emerald-300 bg-emerald-50 dark:bg-emerald-950/20 text-xs font-medium">
+                Aktif
+              </Badge>
             </div>
           </CardContent>
 
           <CardFooter className="bg-muted/5 border-t px-6 py-3.5 flex justify-end">
-            <Button type="submit" disabled={isSaving} className="gap-2">
+            <Button
+              type="button"
+              onClick={handleSave}
+              disabled={isSaving}
+              className="gap-2"
+            >
               {isSaving ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -256,7 +241,7 @@ export function ReminderSettingsCard() {
               )}
             </Button>
           </CardFooter>
-        </form>
+        </div>
       </Card>
 
       {/* 2. PANEL UJI COBA LANGSUNG (TEST CONSOLE) */}
@@ -269,7 +254,7 @@ export function ReminderSettingsCard() {
                 Alat Uji Coba Pengingat Jatuh Tempo (Live Test Console)
               </CardTitle>
               <CardDescription className="text-xs">
-                Uji langsung pengiriman email tagihan sekarang.
+                Uji langsung pengiriman email tagihan sekarang juga tanpa perlu menunggu waktu cron Vercel.
               </CardDescription>
             </div>
             <Link href="/dashboard/pembayaran">
@@ -363,13 +348,6 @@ export function ReminderSettingsCard() {
                         >
                           <Mail className="h-3 w-3" />
                           {item.emailSent ? "Email Terkirim" : "Email Skip/Off"}
-                        </Badge>
-                        <Badge
-                          variant={item.waSent ? "default" : "outline"}
-                          className={`text-[11px] gap-1 ${item.waSent ? "bg-teal-600 text-white" : "text-muted-foreground"}`}
-                        >
-                          <MessageSquare className="h-3 w-3" />
-                          {item.waSent ? "WA Terkirim" : "WA Skip/Off"}
                         </Badge>
                       </div>
                     </div>
