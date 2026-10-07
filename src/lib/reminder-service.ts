@@ -26,11 +26,15 @@ export interface ReminderProcessResult {
   reason?: string
 }
 
-export async function processPaymentReminders(options?: { force?: boolean }) {
+export async function processPaymentReminders(options?: {
+  force?: boolean
+  checkHour?: boolean
+}) {
   const settings = await getReminderSettings()
   const force = options?.force ?? false
+  const checkHour = options?.checkHour ?? false
 
-  // Format tanggal hari ini di WIB (Jakarta)
+  // Format tanggal & jam saat ini di WIB (Jakarta)
   const now = new Date()
   const jakartaDateStr = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Jakarta",
@@ -38,6 +42,33 @@ export async function processPaymentReminders(options?: { force?: boolean }) {
     month: "2-digit",
     day: "2-digit"
   }).format(now) // "YYYY-MM-DD"
+
+  const currentWibHour = parseInt(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Jakarta",
+      hour: "numeric",
+      hour12: false
+    }).format(now),
+    10
+  )
+
+  // Jika checkHour diaktifkan dan bukan force:
+  // Verifikasi apakah jam saat ini sudah sesuai dengan jam di pengaturan
+  if (checkHour && !force) {
+    if (currentWibHour !== settings.reminderHour) {
+      return {
+        success: true,
+        executed: false,
+        skipped: true,
+        currentHourWib: currentWibHour,
+        scheduledHourWib: settings.reminderHour,
+        message: `Bukan jadwal pengiriman. Saat ini pukul ${currentWibHour.toString().padStart(2, "0")}:00 WIB, sedangkan jadwal pengingat diatur untuk pukul ${settings.reminderHour.toString().padStart(2, "0")}:00 WIB.`,
+        processedCount: 0,
+        settings,
+        results: []
+      }
+    }
+  }
 
   const today = new Date(`${jakartaDateStr}T00:00:00+07:00`)
 
@@ -133,13 +164,17 @@ export async function processPaymentReminders(options?: { force?: boolean }) {
         where: { id: targetPayment.id },
         data: { status: "TERLAMBAT" }
       })
+      targetPayment.status = "TERLAMBAT"
     }
 
     // Kondisi pengingat:
-    // Hanya proses jika hari ini berada dalam rentang: H-0 (hari terakhir jatuh tempo) sampai H-(settings.reminderDaysBefore)
-    const isInReminderWindow = diffDays >= 0 && diffDays <= settings.reminderDaysBefore
+    // 1. Tagihan mendekati jatuh tempo (rentang H-(settings.reminderDaysBefore) sampai H-0)
+    // 2. ATAU tagihan sudah lewat jatuh tempo (TERLAMBAT / diffDays < 0) jika autoDailyReminder aktif!
+    const isDueSoon = diffDays >= 0 && diffDays <= settings.reminderDaysBefore
+    const isOverdue = diffDays < 0 && settings.autoDailyReminder
+    const shouldRemind = isDueSoon || isOverdue
 
-    if (!isInReminderWindow && !force) {
+    if (!shouldRemind && !force) {
       continue
     }
 

@@ -15,7 +15,9 @@ import {
   CheckCircle2,
   Mail,
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  Copy,
+  Check
 } from "lucide-react"
 import {
   getReminderSettings,
@@ -42,8 +44,13 @@ export function ReminderSettingsCard() {
   const [isTesting, setIsTesting] = useState(false)
   const [forceTest, setForceTest] = useState(true)
   const [testResult, setTestResult] = useState<any>(null)
+  const [webhookUrl, setWebhookUrl] = useState("")
+  const [copiedWebhook, setCopiedWebhook] = useState(false)
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      setWebhookUrl(`${window.location.origin}/api/cron/payment-reminder`)
+    }
     async function load() {
       try {
         const data = await getReminderSettings()
@@ -171,13 +178,20 @@ export function ReminderSettingsCard() {
                   <SelectTrigger id="reminderHour" className="h-10 w-full min-w-0">
                     <SelectValue placeholder="Pilih Jam" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="7">07:00 WIB (Pagi)</SelectItem>
-                    <SelectItem value="8">08:00 WIB (Standar)</SelectItem>
-                    <SelectItem value="9">09:00 WIB (Pagi)</SelectItem>
-                    <SelectItem value="10">10:00 WIB (Pagi)</SelectItem>
-                    <SelectItem value="12">12:00 WIB (Siang)</SelectItem>
-                    <SelectItem value="17">17:00 WIB (Sore)</SelectItem>
+                  <SelectContent className="max-h-64">
+                    {Array.from({ length: 24 }).map((_, i) => {
+                      const hourStr = i.toString().padStart(2, "0") + ":00"
+                      let label = ""
+                      if (i >= 5 && i <= 10) label = " (Pagi)"
+                      else if (i >= 11 && i <= 14) label = " (Siang)"
+                      else if (i >= 15 && i <= 18) label = " (Sore)"
+                      else label = " (Malam)"
+                      return (
+                        <SelectItem key={i} value={i.toString()}>
+                          {hourStr} WIB{label}
+                        </SelectItem>
+                      )
+                    })}
                   </SelectContent>
                 </Select>
                 <p className="text-[11px] text-muted-foreground">
@@ -244,7 +258,79 @@ export function ReminderSettingsCard() {
         </div>
       </Card>
 
-      {/* 2. PANEL UJI COBA LANGSUNG (TEST CONSOLE) */}
+      {/* 2. PANDUAN PENJADWAL OTOMATIS VERCEL (CRON WEBHOOK) */}
+      <Card className="border border-blue-200/80 dark:border-blue-900/60 bg-blue-50/20 dark:bg-blue-950/10 shadow-xs">
+        <CardHeader className="pb-3 border-b border-blue-100 dark:border-blue-900/40">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-base font-bold flex items-center gap-2 text-foreground">
+                <Clock className="h-4 w-4 text-blue-600" />
+                Penjadwalan Otomatis di Vercel (Webhook Cron)
+              </CardTitle>
+              <CardDescription className="text-xs mt-0.5">
+                Agar pengingat otomatis berjalan tepat waktu setiap hari sesuai jam pilihan Anda di Vercel.
+              </CardDescription>
+            </div>
+            <Badge variant="outline" className="text-blue-600 border-blue-300 dark:border-blue-800 text-xs">
+              cron-job.org Ready
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-4 space-y-3.5 text-xs">
+          <p className="text-muted-foreground leading-relaxed">
+            Paket gratis Vercel membatasi cron hanya 1x sehari di jam tertentu. Agar pengingat otomatis dapat berjalan tepat di jam yang Anda pilih (misal pukul <strong>{settings.reminderHour.toString().padStart(2, "0")}:00 WIB</strong>), gunakan layanan scheduler gratis seperti <strong>cron-job.org</strong> untuk memicu URL webhook berikut:
+          </p>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold text-foreground">URL Webhook Cron Pengingat:</Label>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                readOnly
+                value={webhookUrl || "/api/cron/payment-reminder"}
+                className="flex-1 h-9 px-3 text-xs font-mono rounded-lg border border-input bg-background/90 text-foreground select-all outline-none"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-9 gap-1.5 shrink-0 text-xs"
+                onClick={() => {
+                  if (webhookUrl) {
+                    navigator.clipboard.writeText(webhookUrl)
+                    setCopiedWebhook(true)
+                    setTimeout(() => setCopiedWebhook(false), 2500)
+                  }
+                }}
+              >
+                {copiedWebhook ? (
+                  <>
+                    <Check className="h-3.5 w-3.5 text-emerald-600" />
+                    <span>Tersalin!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3.5 w-3.5" />
+                    <span>Salin URL</span>
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+
+          <div className="p-3 rounded-lg border border-blue-200/50 dark:border-blue-900/40 bg-background/80 space-y-1.5 text-muted-foreground">
+            <span className="font-semibold text-foreground">💡 Cara Pasang Pengingat Otomatis 100% Akurat (1 Menit):</span>
+            <ol className="list-decimal pl-4 space-y-1 leading-relaxed">
+              <li>Buka website gratis <strong>cron-job.org</strong> dan buat akun gratis.</li>
+              <li>Klik <strong>Create Cronjob</strong>, lalu tempelkan URL Webhook di atas.</li>
+              <li>Pilih jadwal eksekusi: <strong>Every 1 hour (Setiap 1 jam)</strong>.</li>
+              <li>Selesai! Cron-job.org akan memicu server Anda setiap jam, dan sistem Kost Bu Wati akan mengeksekusi pengingat tepat saat jam <strong>{settings.reminderHour.toString().padStart(2, "0")}:00 WIB</strong> tiba.</li>
+            </ol>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 3. PANEL UJI COBA LANGSUNG (TEST CONSOLE) */}
       <Card className="border border-indigo-200 dark:border-indigo-900/60 bg-linear-to-br from-card to-indigo-50/20 dark:to-indigo-950/10 shadow-xs">
         <CardHeader className="pb-3 border-b border-indigo-100 dark:border-indigo-900/40">
           <div className="flex items-center justify-between">
@@ -302,6 +388,19 @@ export function ReminderSettingsCard() {
           {/* HASIL EKSEKUSI PENGUJIAN */}
           {testResult && (
             <div className="space-y-3 pt-2">
+              {testResult.skipped && (
+                <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200 rounded-lg text-xs space-y-1">
+                  <div className="font-bold flex items-center gap-1.5">
+                    <Clock className="h-4 w-4 shrink-0 text-amber-600" />
+                    <span>Pengingat Dilewati (Bukan Jadwal Jam Pengiriman)</span>
+                  </div>
+                  <p>{testResult.message}</p>
+                  <p className="text-[11px] text-muted-foreground pt-1">
+                    💡 Centang opsi <strong>"Paksa Kirim Uji Coba"</strong> di atas jika Anda ingin memaksa eksekusi langsung sekarang juga tanpa menunggu jam tiba.
+                  </p>
+                </div>
+              )}
+
               <div className="flex items-center justify-between pb-2 border-b">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-emerald-600" />
@@ -310,7 +409,7 @@ export function ReminderSettingsCard() {
                   </span>
                 </div>
                 <Badge variant={testResult.processedCount > 0 ? "default" : "secondary"} className="text-xs">
-                  {testResult.processedCount > 0 ? "Ada Pengingat Dikirim" : "Semua Lunas / Di Luar Rentang"}
+                  {testResult.processedCount > 0 ? "Ada Pengingat Dikirim" : "Semua Lunas / Tidak Ada Jadwal"}
                 </Badge>
               </div>
 
@@ -333,8 +432,10 @@ export function ReminderSettingsCard() {
                         </p>
                         <p className="text-muted-foreground">
                           Jatuh Tempo: <span className="font-medium text-foreground">{item.dueDate}</span>{" "}
-                          ({item.daysLeft === 0 ? (
-                            <strong className="text-red-500">HARI INI TERAKHIR</strong>
+                          ({item.daysLeft < 0 ? (
+                            <strong className="text-red-600 dark:text-red-400 font-bold">TERLAMBAT {Math.abs(item.daysLeft)} HARI</strong>
+                          ) : item.daysLeft === 0 ? (
+                            <strong className="text-red-500 font-bold">HARI INI TERAKHIR</strong>
                           ) : (
                             <strong className="text-amber-600">Tersisa {item.daysLeft} hari lagi</strong>
                           )})
@@ -355,7 +456,7 @@ export function ReminderSettingsCard() {
                 </div>
               ) : (
                 <div className="p-4 rounded-lg border border-dashed text-center text-xs text-muted-foreground space-y-1">
-                  <p className="font-medium">Tidak ada penghuni yang masuk dalam rentang jatuh tempo (H-{settings.reminderDaysBefore}) untuk saat ini.</p>
+                  <p className="font-medium">Tidak ada penghuni yang perlu diingatkan saat ini.</p>
                   <p>Semua penghuni kost yang aktif telah melunasi tagihannya atau tanggal jatuh temponya masih di luar rentang H-{settings.reminderDaysBefore}.</p>
                 </div>
               )}
