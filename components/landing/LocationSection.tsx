@@ -15,13 +15,13 @@ interface LocationSectionProps {
   adminPhone?: string
 }
 
-export function LocationSection({ adminPhone = "6281234567890" }: LocationSectionProps) {
+export function LocationSection({ adminPhone = "6282278557501" }: LocationSectionProps) {
   const cleanPhone = adminPhone.replace(/[^0-9]/g, "").replace(/^0/, "62")
 
   return (
     <section id="lokasi" className="py-16 sm:py-20 lg:py-24 border-t border-border bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        
+
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <Badge
@@ -40,7 +40,7 @@ export function LocationSection({ adminPhone = "6281234567890" }: LocationSectio
 
         {/* Content Box */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          
+
           {/* Contact & Hours Card */}
           <div className="lg:col-span-5 p-6 sm:p-8 rounded-2xl border border-border bg-card shadow-xs flex flex-col justify-between space-y-6">
             <div className="space-y-6">
