@@ -4,7 +4,8 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Building2, Menu, X, ArrowUpRight, LogIn } from "lucide-react"
+import { Building2, Menu, X, ArrowUpRight, LogIn, Sun, Moon } from "lucide-react"
+import { useTheme } from "next-themes"
 
 export function LandingNavbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -79,74 +80,85 @@ export function LandingNavbar() {
             </a>
           </nav>
 
-          {/* Action Buttons */}
-          <div className="hidden sm:flex items-center gap-2.5">
-            <Link href="/tenant/login">
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-9 text-xs rounded-xl gap-1.5 border-border hover:bg-muted"
-              >
-                <LogIn className="h-3.5 w-3.5 text-muted-foreground" />
-                Portal Penghuni
-              </Button>
-            </Link>
+          {/* Action Buttons & Theme Toggle */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* Theme Toggle (Desktop & Tablet) */}
+            <ThemeToggleHeader />
 
-            <a href="#katalog-kamar">
-              <Button
-                size="sm"
-                className="h-9 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 shadow-xs font-medium"
-              >
-                Pilih Kamar
-                <ArrowUpRight className="h-3.5 w-3.5" />
-              </Button>
-            </a>
+            <div className="hidden sm:flex items-center gap-2">
+              <Link href="/tenant/login">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-9 text-xs rounded-xl gap-1.5 border-border hover:bg-muted"
+                >
+                  <LogIn className="h-3.5 w-3.5 text-muted-foreground" />
+                  Portal Penghuni
+                </Button>
+              </Link>
+
+              <a href="#katalog-kamar">
+                <Button
+                  size="sm"
+                  className="h-9 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 shadow-xs font-medium"
+                >
+                  Pilih Kamar
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </Button>
+              </a>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-xl border border-border text-foreground hover:bg-muted transition-colors"
+              aria-label="Toggle Menu"
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
           </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg border border-border text-foreground hover:bg-muted"
-            aria-label="Toggle Menu"
-          >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
         </div>
 
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
-          <div className="md:hidden mt-3 p-4 rounded-2xl bg-card border border-border shadow-lg space-y-3">
-            <nav className="flex flex-col space-y-2.5 text-sm font-medium">
+          <div className="md:hidden mt-3 p-4 rounded-2xl bg-card border border-border shadow-xl space-y-3 animate-in fade-in slide-in-from-top-2 duration-150">
+            <nav className="flex flex-col space-y-1.5 text-sm font-medium">
               <a
                 href="#katalog-kamar"
                 onClick={() => setMobileMenuOpen(false)}
-                className="px-2 py-1.5 rounded-lg hover:bg-muted text-foreground"
+                className="px-3 py-2 rounded-xl hover:bg-muted text-foreground transition-colors"
               >
                 Katalog Kamar
               </a>
               <a
                 href="#fasilitas"
                 onClick={() => setMobileMenuOpen(false)}
-                className="px-2 py-1.5 rounded-lg hover:bg-muted text-foreground"
+                className="px-3 py-2 rounded-xl hover:bg-muted text-foreground transition-colors"
               >
                 Fasilitas
               </a>
               <a
                 href="#cara-reservasi"
                 onClick={() => setMobileMenuOpen(false)}
-                className="px-2 py-1.5 rounded-lg hover:bg-muted text-foreground"
+                className="px-3 py-2 rounded-xl hover:bg-muted text-foreground transition-colors"
               >
                 Cara Reservasi
               </a>
               <a
                 href="#lokasi"
                 onClick={() => setMobileMenuOpen(false)}
-                className="px-2 py-1.5 rounded-lg hover:bg-muted text-foreground"
+                className="px-3 py-2 rounded-xl hover:bg-muted text-foreground transition-colors"
               >
                 Lokasi & Kontak
               </a>
             </nav>
+
+            {/* Mobile Theme Toggle Row */}
+            <div className="pt-3 border-t border-border flex items-center justify-between px-2">
+              <span className="text-xs font-medium text-muted-foreground">Mode Tampilan</span>
+              <ThemeToggleRow />
+            </div>
 
             <div className="pt-2 border-t border-border flex flex-col gap-2">
               <Link href="/tenant/login" onClick={() => setMobileMenuOpen(false)}>
@@ -165,5 +177,83 @@ export function LandingNavbar() {
         )}
       </div>
     </header>
+  )
+}
+
+function ThemeToggleHeader() {
+  const { setTheme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <div className="w-9 h-9 rounded-xl border border-border bg-card/60" />
+    )
+  }
+
+  const isDark = resolvedTheme === "dark"
+
+  return (
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      className="h-9 w-9 rounded-xl border-border bg-card hover:bg-muted text-foreground transition-all cursor-pointer shadow-2xs"
+      title={isDark ? "Ganti ke Mode Terang (Light Mode)" : "Ganti ke Mode Gelap (Dark Mode)"}
+      aria-label="Toggle Theme"
+    >
+      {isDark ? (
+        <Sun className="h-4 w-4 text-amber-400 transition-transform hover:rotate-45" />
+      ) : (
+        <Moon className="h-4 w-4 text-slate-700 dark:text-slate-300 transition-transform hover:-rotate-12" />
+      )}
+    </Button>
+  )
+}
+
+function ThemeToggleRow() {
+  const { setTheme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return <div className="h-8 w-24 rounded-lg bg-muted animate-pulse" />
+  }
+
+  const isDark = resolvedTheme === "dark"
+
+  return (
+    <div className="flex items-center gap-1 p-1 rounded-xl bg-muted border border-border">
+      <button
+        type="button"
+        onClick={() => setTheme("light")}
+        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+          !isDark
+            ? "bg-background text-foreground shadow-xs"
+            : "text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        <Sun className="h-3.5 w-3.5 text-amber-500" />
+        Terang
+      </button>
+      <button
+        type="button"
+        onClick={() => setTheme("dark")}
+        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+          isDark
+            ? "bg-background text-foreground shadow-xs"
+            : "text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        <Moon className="h-3.5 w-3.5 text-emerald-400" />
+        Gelap
+      </button>
+    </div>
   )
 }

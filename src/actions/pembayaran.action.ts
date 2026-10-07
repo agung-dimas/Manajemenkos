@@ -57,21 +57,50 @@ export async function addPayment(formData: FormData) {
     include: { room: true }
   })
 
-  // Simpan data pembayaran ke database
-  const payment = await prisma.payment.create({
-    data: {
+  // Cek apakah sudah ada tagihan belum lunas (draft dari reminder) untuk penghuni dan periode ini
+  const existingUnpaid = await prisma.payment.findFirst({
+    where: {
       tenantId,
       month,
       year,
-      durationMonth,
-      periodLabel,
-      amount,
-      paymentDate: paymentDateStr ? new Date(paymentDateStr) : null,
-      method,
-      status,
-      proofUrl,
+      status: { in: ["BELUM_BAYAR", "TERKIRIM", "TERLAMBAT"] }
     }
   })
+
+  let payment
+  if (existingUnpaid) {
+    // Perbarui tagihan lama (yang sebelumnya dibuat reminder 1 bulan) menjadi durasi baru (misal 3 bulan) & status lunas
+    payment = await prisma.payment.update({
+      where: { id: existingUnpaid.id },
+      data: {
+        durationMonth,
+        periodLabel,
+        amount,
+        paidAmount: status === "LUNAS" ? amount : existingUnpaid.paidAmount,
+        paymentDate: paymentDateStr ? new Date(paymentDateStr) : (status === "LUNAS" ? new Date() : null),
+        method,
+        status,
+        proofUrl: proofUrl || existingUnpaid.proofUrl,
+      }
+    })
+  } else {
+    // Simpan data pembayaran baru jika belum ada tagihan draft sebelumnya
+    payment = await prisma.payment.create({
+      data: {
+        tenantId,
+        month,
+        year,
+        durationMonth,
+        periodLabel,
+        amount,
+        paidAmount: status === "LUNAS" ? amount : 0,
+        paymentDate: paymentDateStr ? new Date(paymentDateStr) : (status === "LUNAS" ? new Date() : null),
+        method,
+        status,
+        proofUrl,
+      }
+    })
+  }
 
   // Jika status lunas, buat kuitansi PDF dan kirim WhatsApp otomatis
   if (status === "LUNAS" && tenant) {

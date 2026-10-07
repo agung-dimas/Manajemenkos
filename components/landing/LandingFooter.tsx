@@ -1,5 +1,9 @@
+"use client"
+
 import Link from "next/link"
-import { Building2, ShieldCheck, Heart } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Building2, Sun, Moon } from "lucide-react"
+import { useTheme } from "next-themes"
 
 export function LandingFooter() {
   const currentYear = new Date().getFullYear()
@@ -86,13 +90,55 @@ export function LandingFooter() {
         </div>
 
         {/* Bottom Strip */}
-        <div className="mt-12 pt-6 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px]">
+        <div className="mt-12 pt-6 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px]">
           <p>© {currentYear} Kost Bu Wati. Hak Cipta Dilindungi.</p>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">Mode Tampilan:</span>
+            <FooterThemeSwitch />
+          </div>
+
           <p className="flex items-center gap-1">
             Hunian Kost Nyaman, Aman & Bersih
           </p>
         </div>
       </div>
     </footer>
+  )
+}
+
+function FooterThemeSwitch() {
+  const { setTheme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return <div className="w-20 h-7 rounded-lg bg-muted animate-pulse" />
+  }
+
+  const isDark = resolvedTheme === "dark"
+
+  return (
+    <button
+      type="button"
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-border bg-background hover:bg-muted text-foreground transition-colors cursor-pointer text-xs font-medium shadow-2xs"
+      title={isDark ? "Ganti ke Mode Terang (Light Mode)" : "Ganti ke Mode Gelap (Dark Mode)"}
+    >
+      {isDark ? (
+        <>
+          <Sun className="h-3.5 w-3.5 text-amber-400" />
+          <span>Mode Terang</span>
+        </>
+      ) : (
+        <>
+          <Moon className="h-3.5 w-3.5 text-slate-700" />
+          <span>Mode Gelap</span>
+        </>
+      )}
+    </button>
   )
 }
