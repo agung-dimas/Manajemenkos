@@ -12,6 +12,7 @@ import { ChevronLeft, CreditCard, ShieldCheck, Loader2, Sparkles, Building, Cale
 import { getPeriodLabel, getPeriodDateRange } from "@/src/lib/period"
 import { FacilityIcon } from "@/components/kamar/FacilityIcon"
 import { getIconForFacility } from "@/src/lib/facilities"
+import { MonthStepper } from "@/components/ui/month-stepper"
 
 interface Room {
   id: string
@@ -35,8 +36,7 @@ export function TambahPenghuniForm({ availableRooms, defaultRoomId }: TambahPeng
 
   const [selectedRoomId, setSelectedRoomId] = useState<string>(initialRoomId)
   const [joinDate, setJoinDate] = useState<string>(() => new Date().toISOString().split("T")[0])
-  const [durationMonth, setDurationMonth] = useState<number>(6)
-  const [customDuration, setCustomDuration] = useState<string>("")
+  const [durationMonth, setDurationMonth] = useState<number>(1)
   const [paymentMethod, setPaymentMethod] = useState<string>("Tunai")
   const [customAmount, setCustomAmount] = useState<string>("")
 
@@ -45,10 +45,8 @@ export function TambahPenghuniForm({ availableRooms, defaultRoomId }: TambahPeng
     return availableRooms.find(r => r.id === selectedRoomId)
   }, [availableRooms, selectedRoomId])
 
-  // Active duration
-  const activeDuration = durationMonth === -1
-    ? (parseInt(customDuration) || 1)
-    : durationMonth
+  // Jumlah bulan yang dibayar di muka (bebas, sistem bulanan)
+  const activeDuration = Math.max(1, durationMonth || 1)
 
   // Base room price
   const basePrice = selectedRoom ? selectedRoom.price : 0
@@ -296,30 +294,21 @@ export function TambahPenghuniForm({ availableRooms, defaultRoomId }: TambahPeng
             </p>
           </div>
 
-          {/* Pilihan Durasi Sewa */}
+          {/* Jumlah Bulan Dibayar (sistem bulanan, tanpa paket) */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Pilihan Paket Durasi Sewa</Label>
-            <div className="grid grid-cols-2 gap-3 max-w-md">
-              {[
-                { label: "6 Bulan", sub: "Paket Setengah Tahun", value: 6 },
-                { label: "12 Bulan", sub: "Paket 1 Tahun Penuh", value: 12 },
-              ].map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => {
-                    setDurationMonth(opt.value)
-                    setCustomAmount("")
-                  }}
-                  className={`p-3.5 text-left rounded-xl border transition-all ${durationMonth === opt.value
-                    ? "border-primary bg-primary/10 text-primary shadow-sm ring-2 ring-primary/20"
-                    : "border-border/80 bg-background hover:bg-muted text-muted-foreground"
-                    }`}
-                >
-                  <div className="font-bold text-sm text-foreground">{opt.label}</div>
-                  <div className="text-xs text-muted-foreground mt-0.5">{opt.sub}</div>
-                </button>
-              ))}
+            <Label htmlFor="durationMonth" className="text-sm font-medium">Bayar untuk Berapa Bulan?</Label>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <MonthStepper
+                id="durationMonth"
+                value={activeDuration}
+                onChange={(val) => {
+                  setDurationMonth(val)
+                  setCustomAmount("")
+                }}
+              />
+              <span className="text-xs text-muted-foreground">
+                Tarif kamar dihitung per bulan. Isi sesuai keinginan penghuni (default 1 bulan).
+              </span>
             </div>
           </div>
 

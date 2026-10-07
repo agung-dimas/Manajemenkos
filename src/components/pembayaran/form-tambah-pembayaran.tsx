@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Calendar, CreditCard, Sparkles, Loader2 } from "lucide-react"
+import { MonthStepper } from "@/components/ui/month-stepper"
 
 interface TenantWithRoom {
   id: string
@@ -27,14 +28,6 @@ interface FormTambahPembayaranProps {
   initialYear: number
 }
 
-const DURATION_PRESETS = [
-  { label: "6 Bulan (Paket Setengah Tahun)", value: "6", months: 6 },
-  { label: "12 Bulan (Paket 1 Tahun)", value: "12", months: 12 },
-  { label: "1 Bulan (Bulanan)", value: "1", months: 1 },
-  { label: "3 Bulan (Triwulan)", value: "3", months: 3 },
-  { label: "Kustom (Jumlah Bulan)", value: "custom", months: 6 },
-]
-
 export function FormTambahPembayaran({
   tenants,
   initialMonth,
@@ -43,8 +36,7 @@ export function FormTambahPembayaran({
   const [selectedTenantId, setSelectedTenantId] = useState<string>("")
   const [month, setMonth] = useState<number>(initialMonth)
   const [year, setYear] = useState<number>(initialYear)
-  const [durationPreset, setDurationPreset] = useState<string>("6")
-  const [customMonths, setCustomMonths] = useState<number>(6)
+  const [durationMonths, setDurationMonths] = useState<number>(1)
   const [amount, setAmount] = useState<number | string>("")
   const [isPending, startTransition] = useTransition()
 
@@ -52,13 +44,13 @@ export function FormTambahPembayaran({
   const selectedTenant = tenants.find((t) => t.id === selectedTenantId)
   const roomPrice = selectedTenant?.room.price || 0
 
-  // Hitung jumlah bulan efektif
-  const effectiveDuration = durationPreset === "custom" ? Math.max(1, customMonths || 1) : parseInt(durationPreset, 10)
+  // Jumlah bulan yang dibayar (bebas, sistem bulanan)
+  const effectiveDuration = Math.max(1, durationMonths || 1)
 
   // Label periode sewa yang dihitung secara dinamis
   const previewPeriod = getPeriodLabel(month, year, effectiveDuration)
 
-  // Auto-hitung harga ketika tenant atau durasi berubah
+  // Auto-hitung harga ketika tenant atau jumlah bulan berubah
   const handleTenantChange = (tenantId: string) => {
     setSelectedTenantId(tenantId)
     const t = tenants.find((x) => x.id === tenantId)
@@ -67,17 +59,9 @@ export function FormTambahPembayaran({
     }
   }
 
-  const handleDurationPresetChange = (val: string) => {
-    setDurationPreset(val)
-    const dur = val === "custom" ? Math.max(1, customMonths || 1) : parseInt(val, 10)
-    if (roomPrice > 0) {
-      setAmount(roomPrice * dur)
-    }
-  }
-
-  const handleCustomMonthsChange = (val: number) => {
+  const handleDurationChange = (val: number) => {
     const validVal = Math.max(1, val || 1)
-    setCustomMonths(validVal)
+    setDurationMonths(validVal)
     if (roomPrice > 0) {
       setAmount(roomPrice * validVal)
     }
@@ -175,42 +159,15 @@ export function FormTambahPembayaran({
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs font-medium">Paket Durasi Sewa</Label>
-            <Select value={durationPreset} onValueChange={handleDurationPresetChange}>
-              <SelectTrigger className="bg-background">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {DURATION_PRESETS.map((preset) => (
-                  <SelectItem key={preset.value} value={preset.value}>
-                    {preset.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label htmlFor="durationMonths" className="text-xs font-medium">Jumlah Bulan Dibayar</Label>
+            <MonthStepper
+              id="durationMonths"
+              value={effectiveDuration}
+              onChange={handleDurationChange}
+              className="w-full"
+            />
           </div>
         </div>
-
-        {/* Input Kustom Bulan jika memilih Opsi Kustom */}
-        {durationPreset === "custom" && (
-          <div className="pt-2 border-t border-indigo-100 dark:border-indigo-900/50 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-            <Label htmlFor="customMonths" className="text-xs font-medium shrink-0">
-              Berapa Bulan Sewa Sekaligus?
-            </Label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="customMonths"
-                type="number"
-                min={1}
-                max={60}
-                value={customMonths}
-                onChange={(e) => handleCustomMonthsChange(parseInt(e.target.value, 10) || 1)}
-                className="w-24 bg-background"
-              />
-              <span className="text-xs text-muted-foreground">Bulan</span>
-            </div>
-          </div>
-        )}
 
         {/* Banner Preview Periode & Kalkulasi Otomatis */}
         <div className="p-3 bg-white/80 dark:bg-zinc-900/80 border border-indigo-200/80 dark:border-indigo-800/50 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">

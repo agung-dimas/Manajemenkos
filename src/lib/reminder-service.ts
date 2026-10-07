@@ -66,9 +66,14 @@ export async function processPaymentReminders(options?: { force?: boolean }) {
     const joinDateObj = new Date(tenant.joinDate)
     const joinDay = !isNaN(joinDateObj.getTime()) ? joinDateObj.getDate() : 1
 
-    // 1. Cek apakah ada pembayaran belum lunas yang aktif (BELUM_BAYAR, TERKIRIM, SEBAGIAN)
+    // 1. Cek apakah ada tagihan yang belum lunas (BELUM_BAYAR, TERKIRIM, SEBAGIAN, TERLAMBAT)
+    //    TERLAMBAT ikut dihitung agar sistem tidak membuat tagihan ganda untuk periode yang sama.
     const unpaidPayment = tenant.payments.find(
-      (p) => p.status === "BELUM_BAYAR" || p.status === "TERKIRIM" || p.status === "SEBAGIAN"
+      (p) =>
+        p.status === "BELUM_BAYAR" ||
+        p.status === "TERKIRIM" ||
+        p.status === "SEBAGIAN" ||
+        p.status === "TERLAMBAT"
     )
 
     let targetPayment = unpaidPayment
@@ -158,12 +163,13 @@ export async function processPaymentReminders(options?: { force?: boolean }) {
       }
     }
 
-    // Buat Payment record baru jika belum ada
+    // Buat tagihan baru jika belum ada.
+    // Sistem bulanan: tagihan otomatis selalu 1 bulan (harga kamar x 1).
+    // Penghuni bebas mengubah jumlah bulan saat checkout di portal, atau ibu kost mencatat manual.
     if (!targetPayment) {
-      const lastPayment = tenant.payments[0]
-      const durationMonth = lastPayment?.durationMonth || 1
+      const durationMonth = 1
       const billAmount = tenant.room.price * durationMonth
-      const periodLabel = getPeriodLabel(targetMonth, targetYear, durationMonth)
+      const periodLabel = getPeriodLabel(targetMonth, targetYear, durationMonth, joinDay)
 
       const randomString = Math.random().toString(36).substring(2, 6).toUpperCase()
       const monthStr = targetMonth.toString().padStart(2, "0")

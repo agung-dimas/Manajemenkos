@@ -174,6 +174,9 @@ export default async function TenantDashboardPage() {
                     <PayOnlineButton
                       paymentId={currentBill.id}
                       amount={currentBill.amount - (currentBill.paidAmount || 0)}
+                      monthlyPrice={tenant.room.price}
+                      initialMonths={currentBill.durationMonth || 1}
+                      allowCustomMonths={(currentBill.paidAmount || 0) === 0}
                       className="w-full h-11 text-sm font-bold"
                     />
 
