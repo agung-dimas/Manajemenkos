@@ -52,17 +52,39 @@ export async function processPaymentReminders(options?: {
     10
   )
 
+  const currentWibMinute = parseInt(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Jakarta",
+      minute: "numeric"
+    }).format(now),
+    10
+  )
+
+  // Target waktu dalam menit sejak 00:00 hari ini
+  const targetMinute = settings.reminderMinute ?? 0
+  const targetTotalMinutes = settings.reminderHour * 60 + targetMinute
+  const currentTotalMinutes = currentWibHour * 60 + currentWibMinute
+
+  // Waktu cocok jika saat ini tepat pada menit target (atau dalam toleransi 5 menit untuk mengantisipasi jeda cron)
+  const isTimeMatched =
+    currentTotalMinutes >= targetTotalMinutes &&
+    currentTotalMinutes < targetTotalMinutes + 5
+
   // Jika checkHour diaktifkan dan bukan force:
-  // Verifikasi apakah jam saat ini sudah sesuai dengan jam di pengaturan
+  // Verifikasi apakah waktu saat ini sudah sesuai dengan jadwal di pengaturan
   if (checkHour && !force) {
-    if (currentWibHour !== settings.reminderHour) {
+    if (!isTimeMatched) {
+      const scheduledTimeStr = `${settings.reminderHour.toString().padStart(2, "0")}:${targetMinute.toString().padStart(2, "0")} WIB`
+      const currentTimeStr = `${currentWibHour.toString().padStart(2, "0")}:${currentWibMinute.toString().padStart(2, "0")} WIB`
       return {
         success: true,
         executed: false,
         skipped: true,
         currentHourWib: currentWibHour,
+        currentMinuteWib: currentWibMinute,
         scheduledHourWib: settings.reminderHour,
-        message: `Bukan jadwal pengiriman. Saat ini pukul ${currentWibHour.toString().padStart(2, "0")}:00 WIB, sedangkan jadwal pengingat diatur untuk pukul ${settings.reminderHour.toString().padStart(2, "0")}:00 WIB.`,
+        scheduledMinuteWib: targetMinute,
+        message: `Bukan jadwal pengiriman. Saat ini pukul ${currentTimeStr}, sedangkan jadwal pengingat diatur untuk pukul ${scheduledTimeStr}.`,
         processedCount: 0,
         settings,
         results: []

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
@@ -31,6 +32,7 @@ export function ReminderSettingsCard() {
   const [settings, setSettings] = useState<ReminderSettings>({
     reminderDaysBefore: 3,
     reminderHour: 8,
+    reminderMinute: 0,
     autoDailyReminder: true,
     emailReminderActive: true,
     whatsappReminderActive: false
@@ -165,37 +167,74 @@ export function ReminderSettingsCard() {
                 </p>
               </div>
 
-              {/* Jam Pengiriman Otomatis */}
+              {/* Waktu Pengiriman Otomatis (Jam & Menit Bebas) */}
               <div className="space-y-2 min-w-0">
-                <Label htmlFor="reminderHour" className="text-sm font-semibold flex items-center gap-1.5">
-                  <Clock className="h-4 w-4 text-primary shrink-0" />
-                  <span>Jam Pengiriman Otomatis (WIB)</span>
-                </Label>
-                <Select
-                  value={settings.reminderHour.toString()}
-                  onValueChange={(val) => setSettings({ ...settings, reminderHour: parseInt(val) })}
-                >
-                  <SelectTrigger id="reminderHour" className="h-10 w-full min-w-0">
-                    <SelectValue placeholder="Pilih Jam" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-64">
-                    {Array.from({ length: 24 }).map((_, i) => {
-                      const hourStr = i.toString().padStart(2, "0") + ":00"
-                      let label = ""
-                      if (i >= 5 && i <= 10) label = " (Pagi)"
-                      else if (i >= 11 && i <= 14) label = " (Siang)"
-                      else if (i >= 15 && i <= 18) label = " (Sore)"
-                      else label = " (Malam)"
-                      return (
-                        <SelectItem key={i} value={i.toString()}>
-                          {hourStr} WIB{label}
-                        </SelectItem>
-                      )
-                    })}
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="reminderTime" className="text-sm font-semibold flex items-center gap-1.5">
+                    <Clock className="h-4 w-4 text-primary shrink-0" />
+                    <span>Waktu Pengiriman Otomatis (WIB)</span>
+                  </Label>
+                  <Badge variant="secondary" className="text-xs font-mono font-semibold">
+                    {settings.reminderHour.toString().padStart(2, "0")}:{(settings.reminderMinute || 0).toString().padStart(2, "0")} WIB
+                  </Badge>
+                </div>
+
+                <Input
+                  id="reminderTime"
+                  type="time"
+                  value={`${settings.reminderHour.toString().padStart(2, "0")}:${(settings.reminderMinute || 0).toString().padStart(2, "0")}`}
+                  onChange={(e) => {
+                    const val = e.target.value
+                    if (!val) return
+                    const [hStr, mStr] = val.split(":")
+                    const h = parseInt(hStr, 10)
+                    const m = parseInt(mStr, 10)
+                    setSettings({
+                      ...settings,
+                      reminderHour: isNaN(h) ? 8 : h,
+                      reminderMinute: isNaN(m) ? 0 : m,
+                    })
+                  }}
+                  className="h-10 text-base font-semibold px-3 bg-background"
+                />
+
+                {/* Preset tombol cepat */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                  <span className="text-[11px] text-muted-foreground mr-0.5">Preset:</span>
+                  {[
+                    { label: "08:00 (Pagi)", h: 8, m: 0 },
+                    { label: "12:00 (Siang)", h: 12, m: 0 },
+                    { label: "18:00 (Sore)", h: 18, m: 0 },
+                    { label: "18:24 (Kustom)", h: 18, m: 24 },
+                    { label: "20:00 (Malam)", h: 20, m: 0 },
+                  ].map((preset, idx) => {
+                    const isActive =
+                      settings.reminderHour === preset.h &&
+                      (settings.reminderMinute || 0) === preset.m
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() =>
+                          setSettings({
+                            ...settings,
+                            reminderHour: preset.h,
+                            reminderMinute: preset.m,
+                          })
+                        }
+                        className={`text-[11px] px-2 py-0.5 rounded-md border transition-colors ${isActive
+                            ? "bg-primary text-primary-foreground border-primary font-semibold"
+                            : "bg-muted/40 hover:bg-muted text-muted-foreground border-border"
+                          }`}
+                      >
+                        {preset.label}
+                      </button>
+                    )
+                  })}
+                </div>
+
                 <p className="text-[11px] text-muted-foreground">
-                  Waktu penjadwalan eksekusi cron harian untuk mengirim pengingat ke penghuni.
+                  Ketik jam dan menit bebas kapan pengingat otomatis dikirimkan ke WhatsApp & Email penghuni.
                 </p>
               </div>
             </div>
@@ -258,79 +297,8 @@ export function ReminderSettingsCard() {
         </div>
       </Card>
 
-      {/* 2. PANDUAN PENJADWAL OTOMATIS VERCEL (CRON WEBHOOK) */}
-      <Card className="border border-blue-200/80 dark:border-blue-900/60 bg-blue-50/20 dark:bg-blue-950/10 shadow-xs">
-        <CardHeader className="pb-3 border-b border-blue-100 dark:border-blue-900/40">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-base font-bold flex items-center gap-2 text-foreground">
-                <Clock className="h-4 w-4 text-blue-600" />
-                Penjadwalan Otomatis di Vercel (Webhook Cron)
-              </CardTitle>
-              <CardDescription className="text-xs mt-0.5">
-                Agar pengingat otomatis berjalan tepat waktu setiap hari sesuai jam pilihan Anda di Vercel.
-              </CardDescription>
-            </div>
-            <Badge variant="outline" className="text-blue-600 border-blue-300 dark:border-blue-800 text-xs">
-              cron-job.org Ready
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-4 space-y-3.5 text-xs">
-          <p className="text-muted-foreground leading-relaxed">
-            Paket gratis Vercel membatasi cron hanya 1x sehari di jam tertentu. Agar pengingat otomatis dapat berjalan tepat di jam yang Anda pilih (misal pukul <strong>{settings.reminderHour.toString().padStart(2, "0")}:00 WIB</strong>), gunakan layanan scheduler gratis seperti <strong>cron-job.org</strong> untuk memicu URL webhook berikut:
-          </p>
 
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-foreground">URL Webhook Cron Pengingat:</Label>
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                readOnly
-                value={webhookUrl || "/api/cron/payment-reminder"}
-                className="flex-1 h-9 px-3 text-xs font-mono rounded-lg border border-input bg-background/90 text-foreground select-all outline-none"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-9 gap-1.5 shrink-0 text-xs"
-                onClick={() => {
-                  if (webhookUrl) {
-                    navigator.clipboard.writeText(webhookUrl)
-                    setCopiedWebhook(true)
-                    setTimeout(() => setCopiedWebhook(false), 2500)
-                  }
-                }}
-              >
-                {copiedWebhook ? (
-                  <>
-                    <Check className="h-3.5 w-3.5 text-emerald-600" />
-                    <span>Tersalin!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-3.5 w-3.5" />
-                    <span>Salin URL</span>
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
-
-          <div className="p-3 rounded-lg border border-blue-200/50 dark:border-blue-900/40 bg-background/80 space-y-1.5 text-muted-foreground">
-            <span className="font-semibold text-foreground">💡 Cara Pasang Pengingat Otomatis 100% Akurat (1 Menit):</span>
-            <ol className="list-decimal pl-4 space-y-1 leading-relaxed">
-              <li>Buka website gratis <strong>cron-job.org</strong> dan buat akun gratis.</li>
-              <li>Klik <strong>Create Cronjob</strong>, lalu tempelkan URL Webhook di atas.</li>
-              <li>Pilih jadwal eksekusi: <strong>Every 1 hour (Setiap 1 jam)</strong>.</li>
-              <li>Selesai! Cron-job.org akan memicu server Anda setiap jam, dan sistem Kost Bu Wati akan mengeksekusi pengingat tepat saat jam <strong>{settings.reminderHour.toString().padStart(2, "0")}:00 WIB</strong> tiba.</li>
-            </ol>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* 3. PANEL UJI COBA LANGSUNG (TEST CONSOLE) */}
+      {/* 2. PANEL UJI COBA LANGSUNG (TEST CONSOLE) */}
       <Card className="border border-indigo-200 dark:border-indigo-900/60 bg-linear-to-br from-card to-indigo-50/20 dark:to-indigo-950/10 shadow-xs">
         <CardHeader className="pb-3 border-b border-indigo-100 dark:border-indigo-900/40">
           <div className="flex items-center justify-between">

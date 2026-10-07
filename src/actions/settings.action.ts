@@ -5,7 +5,8 @@ import { revalidatePath } from "next/cache"
 
 export interface ReminderSettings {
   reminderDaysBefore: number // e.g. 3 (H-3), 5, 7
-  reminderHour: number       // e.g. 8 (08:00 WIB)
+  reminderHour: number       // e.g. 18 (18:00 WIB)
+  reminderMinute: number     // e.g. 24 (18:24 WIB)
   autoDailyReminder: boolean  // true = kirim setiap hari jika belum bayar sampai hari H jatuh tempo
   emailReminderActive: boolean
   whatsappReminderActive: boolean
@@ -14,6 +15,7 @@ export interface ReminderSettings {
 const DEFAULT_SETTINGS: ReminderSettings = {
   reminderDaysBefore: 3,
   reminderHour: 8,
+  reminderMinute: 0,
   autoDailyReminder: true,
   emailReminderActive: true,
   whatsappReminderActive: true,
@@ -27,6 +29,7 @@ export async function getReminderSettings(): Promise<ReminderSettings> {
           in: [
             "reminder_days_before",
             "reminder_hour",
+            "reminder_minute",
             "auto_daily_reminder",
             "email_reminder_active",
             "whatsapp_reminder_active",
@@ -44,6 +47,9 @@ export async function getReminderSettings(): Promise<ReminderSettings> {
       reminderHour: map.has("reminder_hour")
         ? parseInt(map.get("reminder_hour")!) || DEFAULT_SETTINGS.reminderHour
         : DEFAULT_SETTINGS.reminderHour,
+      reminderMinute: map.has("reminder_minute")
+        ? parseInt(map.get("reminder_minute")!) || DEFAULT_SETTINGS.reminderMinute
+        : DEFAULT_SETTINGS.reminderMinute,
       autoDailyReminder: map.has("auto_daily_reminder")
         ? map.get("auto_daily_reminder") === "true"
         : DEFAULT_SETTINGS.autoDailyReminder,
@@ -80,6 +86,16 @@ export async function saveReminderSettings(data: Partial<ReminderSettings>) {
           where: { key: "reminder_hour" },
           update: { value: data.reminderHour.toString() },
           create: { key: "reminder_hour", value: data.reminderHour.toString() },
+        })
+      )
+    }
+
+    if (data.reminderMinute !== undefined) {
+      upserts.push(
+        prisma.systemSetting.upsert({
+          where: { key: "reminder_minute" },
+          update: { value: data.reminderMinute.toString() },
+          create: { key: "reminder_minute", value: data.reminderMinute.toString() },
         })
       )
     }
