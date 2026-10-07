@@ -1,0 +1,332 @@
+<mxfile host="app.diagrams.net" modified="2026-09-30T03:15:00.000Z" agent="Antigravity" version="24.7.5" type="device">
+  <diagram id="system-flow-kost" name="Flowchart Sistem Manajemen Kost">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2000" pageHeight="1600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- HEADER TITLE -->
+        <mxCell id="hdr_title" value="WORKFLOW &amp; SYSTEM FLOWCHART - SISTEM MANAJEMEN KOST" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=22;fontStyle=1;fontColor=#0F172A;" vertex="1" parent="1">
+          <mxGeometry x="450" y="30" width="800" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="hdr_sub" value="Alur Proses Lengkap: Pengelolaan Kamar, Penghuni, Siklus Penagihan Otomatis (Cron &amp; Resend), Pembayaran/Cicilan, hingga Laporan" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#64748B;" vertex="1" parent="1">
+          <mxGeometry x="400" y="70" width="900" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================================ -->
+        <!-- SWIMLANE CONTAINER (POOL) -->
+        <!-- ============================================================ -->
+        <mxCell id="pool_main" value="Sistem Manajemen Kost" style="swimlane;html=1;childLayout=stackLayout;resizeParent=1;resizeParentMax=0;startSize=30;horizontal=0;horizontalStack=1;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontStyle=1;fontSize=14;fontColor=#1E293B;" vertex="1" parent="1">
+          <mxGeometry x="60" y="120" width="1680" height="1380" as="geometry" />
+        </mxCell>
+
+        <!-- SWIMLANE 1: ADMIN / PETUGAS KOST -->
+        <mxCell id="lane_admin" value="Pengelola / Admin Kost" style="swimlane;html=1;startSize=30;fillColor=#EEF2FF;strokeColor=#C7D2FE;fontStyle=1;fontSize=13;fontColor=#3730A3;" vertex="1" parent="pool_main">
+          <mxGeometry x="30" y="0" width="410" height="1380" as="geometry" />
+        </mxCell>
+
+        <!-- SWIMLANE 2: WEB APP / BACKEND SYSTEM -->
+        <mxCell id="lane_system" value="Sistem Inti (Next.js &amp; Prisma Backend)" style="swimlane;html=1;startSize=30;fillColor=#F0FDFA;strokeColor=#99F6E4;fontStyle=1;fontSize=13;fontColor=#115E59;" vertex="1" parent="pool_main">
+          <mxGeometry x="440" y="0" width="440" height="1380" as="geometry" />
+        </mxCell>
+
+        <!-- SWIMLANE 3: PENGHUNI KOST (TENANT) -->
+        <mxCell id="lane_tenant" value="Penghuni Kost (Tenant)" style="swimlane;html=1;startSize=30;fillColor=#F0F9FF;strokeColor=#BAE6FD;fontStyle=1;fontSize=13;fontColor=#0369A1;" vertex="1" parent="pool_main">
+          <mxGeometry x="880" y="0" width="380" height="1380" as="geometry" />
+        </mxCell>
+
+        <!-- SWIMLANE 4: LAYANAN OTOMATIS & EKSTERNAL -->
+        <mxCell id="lane_external" value="Layanan Otomatis (Cron, Resend, Supabase)" style="swimlane;html=1;startSize=30;fillColor=#FFFBEB;strokeColor=#FDE68A;fontStyle=1;fontSize=13;fontColor=#92400E;" vertex="1" parent="pool_main">
+          <mxGeometry x="1260" y="0" width="390" height="1380" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================================ -->
+        <!-- PROSES 1: ONBOARDING KAMAR & PENGHUNI -->
+        <!-- ============================================================ -->
+        <!-- Start Node -->
+        <mxCell id="node_start" value="Mulai" style="ellipse;whiteSpace=wrap;html=1;fillColor=#10B981;fontColor=#FFFFFF;strokeColor=#059669;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="220" y="180" width="90" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Admin: Input Kamar & Fasilitas -->
+        <mxCell id="node_input_kamar" value="Input Data Kamar &amp;&#xa;Pilih Fasilitas Kamar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6366F1;fontColor=#FFFFFF;strokeColor=#4F46E5;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="190" y="260" width="150" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Sistem: Simpan Kamar (Status KOSONG) -->
+        <mxCell id="node_kamar_kosong" value="Simpan Kamar ke DB&#xa;Status: KOSONG" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0D9488;fontColor=#FFFFFF;strokeColor=#0F766E;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="260" width="160" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Admin: Pendaftaran Penghuni Baru -->
+        <mxCell id="node_reg_tenant" value="Registrasi Penghuni Baru&#xa;(NIK, No HP, Email, Foto KTP,&#xa;Pilih Kamar &amp; Tanggal Masuk)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6366F1;fontColor=#FFFFFF;strokeColor=#4F46E5;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="175" y="350" width="180" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- Sistem: Validasi & Update Status Kamar -->
+        <mxCell id="node_proc_tenant" value="Validasi NIK Unik &amp;&#xa;Upload Foto ke Supabase Storage.&#xa;Status Kamar diubah jadi: TERISI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0D9488;fontColor=#FFFFFF;strokeColor=#0F766E;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="625" y="350" width="190" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- Sistem: Buat Akun Portal Penghuni -->
+        <mxCell id="node_create_portal" value="Otomatis Buat Akun&#xa;Portal Penghuni (Login NIK/Email)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0284C7;fontColor=#FFFFFF;strokeColor=#0369A1;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="350" width="170" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================================ -->
+        <!-- PROSES 2: SIKLUS PENAGIHAN & PENGINGAT OTOMATIS (CRON) -->
+        <!-- ============================================================ -->
+        <!-- Admin: Atur Pengingat Jatuh Tempo -->
+        <mxCell id="node_setting_reminder" value="Pengaturan Pengingat Jatuh Tempo&#xa;(Set H- Berapa Hari &amp; Jam Eksekusi&#xa;Tersimpan di SystemSetting)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6366F1;fontColor=#FFFFFF;strokeColor=#4F46E5;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="165" y="470" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Eksternal: Vercel Cron Trigger Harian -->
+        <mxCell id="node_cron_trigger" value="Vercel Cron Trigger Harian&#xa;(Eksekusi GET /api/cron/payment-reminder&#xa;setiap jam terjadwal, misal 08:00 WIB)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D97706;fontColor=#FFFFFF;strokeColor=#B45309;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="470" width="210" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Sistem: Pindai Tagihan Aktif Sesuai Parameter H- -->
+        <mxCell id="node_scan_due" value="Sistem Memindai Tagihan:&#xa;1. Ambil Setting H- dari DB&#xa;2. Filter Tagihan BELUM BAYAR / SEBAGIAN&#xa;3. Hitung Selisih Hari Jatuh Tempo" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0D9488;fontColor=#FFFFFF;strokeColor=#0F766E;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="620" y="570" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Decision: Masuk Rentang H- ? -->
+        <mxCell id="node_dec_due" value="Tagihan Masuk&#xa;Rentang H-&#xa;Jatuh Tempo?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#F59E0B;fontColor=#FFFFFF;strokeColor=#D97706;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="650" y="680" width="140" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Sistem: Generate Invoice PDF -->
+        <mxCell id="node_gen_invoice" value="Generate Invoice PDF Resmi&#xa;Auto-Simpan ke Supabase Storage &amp;&#xa;Update invoiceUrl di Tabel Payment" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0D9488;fontColor=#FFFFFF;strokeColor=#0F766E;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="625" y="800" width="190" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Eksternal: Resend Kirim Email Tagihan -->
+        <mxCell id="node_send_email" value="Resend Email API&#xa;Kirim Email Pengingat Tagihan&#xa;+ Lampiran Link Invoice PDF&#xa;ke Email Penghuni" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D97706;fontColor=#FFFFFF;strokeColor=#B45309;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1405" y="800" width="200" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- Penghuni: Menerima Email Notifikasi -->
+        <mxCell id="node_tenant_receive" value="Penghuni Menerima Email Tagihan&#xa;Lihat Rincian Sewa &amp; Download&#xa;Invoice PDF via Email / Portal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0284C7;fontColor=#FFFFFF;strokeColor=#0369A1;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="990" y="800" width="190" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================================ -->
+        <!-- PROSES 3: PEMBAYARAN, CICILAN, DAN KUITANSI -->
+        <!-- ============================================================ -->
+        <!-- Penghuni: Bayar Sewa -->
+        <mxCell id="node_pay_action" value="Penghuni Melakukan Pembayaran&#xa;(Transfer Bank / Cash / QRIS)&#xa;Bisa Bayar Lunas atau Dicicil" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0284C7;fontColor=#FFFFFF;strokeColor=#0369A1;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="990" y="910" width="190" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Admin: Verifikasi & Input Pembayaran -->
+        <mxCell id="node_admin_verify" value="Admin Verifikasi Pembayaran:&#xa;Input Nominal Masuk, Metode Bayar,&#xa;&amp; Upload Bukti Transfer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6366F1;fontColor=#FFFFFF;strokeColor=#4F46E5;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="175" y="910" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Sistem: Catat Installment & Hitung Sisa -->
+        <mxCell id="node_proc_payment" value="Sistem Mencatat PaymentInstallment:&#xa;1. Akumulasi paidAmount&#xa;2. Hitung Sisa Kewajiban Tagihan&#xa;3. Generate Kuitansi PDF Pembayaran" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0D9488;fontColor=#FFFFFF;strokeColor=#0F766E;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="620" y="910" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Decision: Lunas atau Sebagian? -->
+        <mxCell id="node_dec_lunas" value="Apakah&#xa;paidAmount &gt;=&#xa;Total Tagihan?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#F59E0B;fontColor=#FFFFFF;strokeColor=#D97706;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="655" y="1030" width="130" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Sistem: Set LUNAS -->
+        <mxCell id="node_status_lunas" value="Set Status: LUNAS&#xa;Tutup Siklus Tagihan Bulan Ini" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10B981;fontColor=#FFFFFF;strokeColor=#059669;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="840" y="1045" width="170" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Sistem: Set SEBAGIAN -->
+        <mxCell id="node_status_sebagian" value="Set Status: SEBAGIAN&#xa;(Sisa tagihan tetap akan dikirimi&#xa;pengingat sampai tanggal jatuh tempo)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F59E0B;fontColor=#FFFFFF;strokeColor=#D97706;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="450" y="1045" width="170" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Penghuni: Unduh Kuitansi -->
+        <mxCell id="node_tenant_receipt" value="Penghuni Mengunduh Kuitansi PDF&#xa;dari Portal Penghuni sebagai Bukti Sah" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0284C7;fontColor=#FFFFFF;strokeColor=#0369A1;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="1042" width="190" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================================ -->
+        <!-- PROSES 4: PENGELUARAN, OKUPANSI & LAPORAN -->
+        <!-- ============================================================ -->
+        <!-- Admin: Catat Pengeluaran Operasional -->
+        <mxCell id="node_expense" value="Admin Mencatat Pengeluaran Operasional&#xa;(Listrik, Air, WiFi, Gaji, Maintenance)&#xa;ke Menu Pengeluaran" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6366F1;fontColor=#FFFFFF;strokeColor=#4F46E5;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="165" y="1170" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Sistem: Kalkulasi Laporan Keuangan & Okupansi -->
+        <mxCell id="node_report" value="Sistem Otomatis Menghitung:&#xa;1. Total Pemasukan Bersih (Pembayaran)&#xa;2. Total Beban Operasional (Pengeluaran)&#xa;3. Laba Bersih &amp; Persentase Okupansi Kamar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0D9488;fontColor=#FFFFFF;strokeColor=#0F766E;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="620" y="1165" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Admin: Lihat Dashboard & Cetak Laporan -->
+        <mxCell id="node_view_report" value="Lihat Analitik Grafik Pemasukan,&#xa;Filter Periode Bulan/Tahun, &amp;&#xa;Ekspor Laporan Keuangan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6366F1;fontColor=#FFFFFF;strokeColor=#4F46E5;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="175" y="1280" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Selesai Node -->
+        <mxCell id="node_end" value="Selesai" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EF4444;fontColor=#FFFFFF;strokeColor=#DC2626;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="675" y="1287" width="90" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================================ -->
+        <!-- GARIS PENGHUBUNG & PANAH (CONNECTORS) -->
+        <!-- ============================================================ -->
+        <!-- Start -> Input Kamar -->
+        <mxCell id="flow_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#64748B;" edge="1" parent="1" source="node_start" target="node_input_kamar">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Input Kamar -> Simpan Kamar -->
+        <mxCell id="flow_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#64748B;" edge="1" parent="1" source="node_input_kamar" target="node_kamar_kosong">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Simpan Kamar -> Registrasi Penghuni -->
+        <mxCell id="flow_3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#64748B;" edge="1" parent="1" source="node_kamar_kosong" target="node_reg_tenant">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="720" y="325" />
+              <mxPoint x="265" y="325" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Registrasi Penghuni -> Validasi Sistem -->
+        <mxCell id="flow_4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#64748B;" edge="1" parent="1" source="node_reg_tenant" target="node_proc_tenant">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Validasi Sistem -> Buat Portal Penghuni -->
+        <mxCell id="flow_5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#64748B;" edge="1" parent="1" source="node_proc_tenant" target="node_create_portal">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Setting Reminder -> Database -->
+        <mxCell id="flow_6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#64748B;" edge="1" parent="1" source="node_setting_reminder" target="node_scan_due">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="265" y="550" />
+              <mxPoint x="670" y="550" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Cron Trigger -> Pindai Tagihan -->
+        <mxCell id="flow_7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#64748B;" edge="1" parent="1" source="node_cron_trigger" target="node_scan_due">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1505" y="550" />
+              <mxPoint x="770" y="550" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Pindai Tagihan -> Decision Rentang H- -->
+        <mxCell id="flow_8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#64748B;" edge="1" parent="1" source="node_scan_due" target="node_dec_due">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Decision H- (Ya) -> Generate Invoice PDF -->
+        <mxCell id="flow_9" value="Ya (H- masuk rentang)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#059669;fontColor=#059669;fontStyle=1;fontSize=10;" edge="1" parent="1" source="node_dec_due" target="node_gen_invoice">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Decision H- (Tidak) -> Abaikan -->
+        <mxCell id="flow_10" value="Tidak (Belum waktunya)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#94A3B8;fontColor=#64748B;fontSize=10;dashed=1;" edge="1" parent="1" source="node_dec_due">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="550" y="720" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="note_abaikan" value="Skip / Tidak Kirim" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#94A3B8;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="460" y="705" width="90" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Generate Invoice -> Kirim Email Resend -->
+        <mxCell id="flow_11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#D97706;" edge="1" parent="1" source="node_gen_invoice" target="node_send_email">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Kirim Email Resend -> Diterima Penghuni -->
+        <mxCell id="flow_12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#0284C7;" edge="1" parent="1" source="node_send_email" target="node_tenant_receive">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Diterima Penghuni -> Bayar Sewa -->
+        <mxCell id="flow_13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#64748B;" edge="1" parent="1" source="node_tenant_receive" target="node_pay_action">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Bayar Sewa -> Admin Verifikasi -->
+        <mxCell id="flow_14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#64748B;" edge="1" parent="1" source="node_pay_action" target="node_admin_verify">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="960" y="940" />
+              <mxPoint x="960" y="885" />
+              <mxPoint x="265" y="885" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Admin Verifikasi -> Sistem Catat Pembayaran -->
+        <mxCell id="flow_15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#64748B;" edge="1" parent="1" source="node_admin_verify" target="node_proc_payment">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Sistem Catat -> Decision Lunas -->
+        <mxCell id="flow_16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#64748B;" edge="1" parent="1" source="node_proc_payment" target="node_dec_lunas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Decision Lunas (Ya) -> Set LUNAS -->
+        <mxCell id="flow_17" value="Ya (Lunas)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#059669;fontColor=#059669;fontStyle=1;fontSize=10;" edge="1" parent="1" source="node_dec_lunas" target="node_status_lunas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Decision Lunas (Belum) -> Set SEBAGIAN -->
+        <mxCell id="flow_18" value="Belum (Cicilan)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#D97706;fontColor=#D97706;fontStyle=1;fontSize=10;" edge="1" parent="1" source="node_dec_lunas" target="node_status_sebagian">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Set LUNAS -> Unduh Kuitansi -->
+        <mxCell id="flow_19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#059669;" edge="1" parent="1" source="node_status_lunas" target="node_tenant_receipt">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Admin Catat Pengeluaran -> Sistem Hitung Laporan -->
+        <mxCell id="flow_20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#64748B;" edge="1" parent="1" source="node_expense" target="node_report">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Status Lunas -> Sistem Hitung Laporan -->
+        <mxCell id="flow_21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#64748B;" edge="1" parent="1" source="node_status_lunas" target="node_report">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="925" y="1135" />
+              <mxPoint x="750" y="1135" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Sistem Hitung Laporan -> Lihat Dashboard & Cetak Laporan -->
+        <mxCell id="flow_22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#64748B;" edge="1" parent="1" source="node_report" target="node_view_report">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="720" y="1255" />
+              <mxPoint x="265" y="1255" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Lihat Dashboard -> Selesai -->
+        <mxCell id="flow_23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#64748B;" edge="1" parent="1" source="node_view_report" target="node_end">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

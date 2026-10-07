@@ -1,0 +1,374 @@
+<mxfile host="app.diagrams.net" modified="2026-09-30T02:45:00.000Z" agent="Antigravity" version="24.7.5" type="device">
+  <diagram id="erd-manajemen-kost" name="ERD Manajemen Kost">
+    <mxGraphModel dx="1600" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- JUDUL & HEADER DIAGRAM -->
+        <mxCell id="title" value="ENTITY RELATIONSHIP DIAGRAM (ERD) - SISTEM MANAJEMEN KOST" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontColor=#1E293B;" vertex="1" parent="1">
+          <mxGeometry x="400" y="30" width="700" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Database PostgreSQL (Supabase) • Prisma ORM • Relasi 1:N dan N:M Lengkap" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#64748B;" vertex="1" parent="1">
+          <mxGeometry x="450" y="65" width="600" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- 1. USER (ADMIN & PETUGAS) -->
+        <!-- ========================================== -->
+        <mxCell id="tbl_user" value="User (Pengguna Sistem)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;whiteSpace=wrap;fillColor=#6366F1;fontColor=#FFFFFF;strokeColor=#4F46E5;rounded=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="140" width="260" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="u_col_1" value="+ id: String (UUID) [PK]" style="text;strokeColor=none;fillColor=#EEF2FF;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;fontColor=#1E1B4B;" vertex="1" parent="tbl_user">
+          <mxGeometry y="30" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="u_col_2" value="+ email: String [UQ]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_user">
+          <mxGeometry y="56" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="u_col_3" value="+ name: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_user">
+          <mxGeometry y="82" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="u_col_4" value="+ role: RoleEnum (ADMIN | PETUGAS)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_user">
+          <mxGeometry y="108" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="u_col_5" value="+ createdAt: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#64748B;" vertex="1" parent="tbl_user">
+          <mxGeometry y="134" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="u_col_6" value="+ updatedAt: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#64748B;" vertex="1" parent="tbl_user">
+          <mxGeometry y="160" width="260" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- 2. ACTIVITY LOG -->
+        <!-- ========================================== -->
+        <mxCell id="tbl_activity_log" value="ActivityLog (Audit Trail)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;whiteSpace=wrap;fillColor=#8B5CF6;fontColor=#FFFFFF;strokeColor=#7C3AED;rounded=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="440" width="260" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="al_col_1" value="+ id: String (UUID) [PK]" style="text;strokeColor=none;fillColor=#F5F3FF;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;fontColor=#2E1065;" vertex="1" parent="tbl_activity_log">
+          <mxGeometry y="30" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="al_col_2" value="+ userId: String (UUID) [FK]" style="text;strokeColor=none;fillColor=#EDE9FE;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;fontColor=#5B21B6;" vertex="1" parent="tbl_activity_log">
+          <mxGeometry y="56" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="al_col_3" value="+ action: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_activity_log">
+          <mxGeometry y="82" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="al_col_4" value="+ description: Text" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_activity_log">
+          <mxGeometry y="108" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="al_col_5" value="+ createdAt: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#64748B;" vertex="1" parent="tbl_activity_log">
+          <mxGeometry y="134" width="260" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- 3. NOTIFICATION -->
+        <!-- ========================================== -->
+        <mxCell id="tbl_notification" value="Notification (Pemberitahuan)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;whiteSpace=wrap;fillColor=#8B5CF6;fontColor=#FFFFFF;strokeColor=#7C3AED;rounded=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="690" width="260" height="205" as="geometry" />
+        </mxCell>
+        <mxCell id="notif_col_1" value="+ id: String (UUID) [PK]" style="text;strokeColor=none;fillColor=#F5F3FF;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;fontColor=#2E1065;" vertex="1" parent="tbl_notification">
+          <mxGeometry y="30" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="notif_col_2" value="+ userId: String (UUID) [FK]" style="text;strokeColor=none;fillColor=#EDE9FE;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;fontColor=#5B21B6;" vertex="1" parent="tbl_notification">
+          <mxGeometry y="56" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="notif_col_3" value="+ title: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_notification">
+          <mxGeometry y="82" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="notif_col_4" value="+ message: Text" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_notification">
+          <mxGeometry y="108" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="notif_col_5" value="+ isRead: Boolean (default: false)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_notification">
+          <mxGeometry y="134" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="notif_col_6" value="+ createdAt: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#64748B;" vertex="1" parent="tbl_notification">
+          <mxGeometry y="160" width="260" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- 4. ROOM (KAMAR) -->
+        <!-- ========================================== -->
+        <mxCell id="tbl_room" value="Room (Kamar Kost)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;whiteSpace=wrap;fillColor=#0D9488;fontColor=#FFFFFF;strokeColor=#0F766E;rounded=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="140" width="280" height="315" as="geometry" />
+        </mxCell>
+        <mxCell id="r_col_1" value="+ id: String (UUID) [PK]" style="text;strokeColor=none;fillColor=#F0FDFA;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;fontColor=#134E4A;" vertex="1" parent="tbl_room">
+          <mxGeometry y="30" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="r_col_2" value="+ number: String [UQ]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_room">
+          <mxGeometry y="56" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="r_col_3" value="+ floor: Int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_room">
+          <mxGeometry y="82" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="r_col_4" value="+ price: Float" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_room">
+          <mxGeometry y="108" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="r_col_5" value="+ status: RoomStatus (KOSONG | TERISI | ...)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_room">
+          <mxGeometry y="134" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="r_col_6" value="+ size: String? (e.g. 3x4)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_room">
+          <mxGeometry y="160" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="r_col_7" value="+ description: Text?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_room">
+          <mxGeometry y="186" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="r_col_8" value="+ photos: String[] (Storage URLs)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_room">
+          <mxGeometry y="212" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="r_col_9" value="+ createdAt: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#64748B;" vertex="1" parent="tbl_room">
+          <mxGeometry y="238" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="r_col_10" value="+ updatedAt: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#64748B;" vertex="1" parent="tbl_room">
+          <mxGeometry y="264" width="280" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- 5. FACILITY (FASILITAS KAMAR) -->
+        <!-- ========================================== -->
+        <mxCell id="tbl_facility" value="Facility (Fasilitas Kamar)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;whiteSpace=wrap;fillColor=#0D9488;fontColor=#FFFFFF;strokeColor=#0F766E;rounded=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="550" width="280" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="f_col_1" value="+ id: String (UUID) [PK]" style="text;strokeColor=none;fillColor=#F0FDFA;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;fontColor=#134E4A;" vertex="1" parent="tbl_facility">
+          <mxGeometry y="30" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="f_col_2" value="+ name: String [UQ]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_facility">
+          <mxGeometry y="56" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="f_col_3" value="+ icon: String? (Lucide icon key)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_facility">
+          <mxGeometry y="82" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="f_col_4" value="+ createdAt: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#64748B;" vertex="1" parent="tbl_facility">
+          <mxGeometry y="108" width="280" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- JUNCTION: _FacilityToRoom (N:M Implicit) -->
+        <!-- ========================================== -->
+        <mxCell id="tbl_facility_room" value="_FacilityToRoom (Junction N:M)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;whiteSpace=wrap;fillColor=#14B8A6;fontColor=#FFFFFF;strokeColor=#0D9488;rounded=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="460" y="475" width="240" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="fr_col_1" value="+ A: String (UUID) [FK -> Facility.id]" style="text;strokeColor=none;fillColor=#CCFBF1;align=left;verticalAlign=middle;spacingLeft=6;fontSize=10;fontColor=#115E59;fontStyle=1;" vertex="1" parent="tbl_facility_room">
+          <mxGeometry y="26" width="240" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="fr_col_2" value="+ B: String (UUID) [FK -> Room.id]" style="text;strokeColor=none;fillColor=#CCFBF1;align=left;verticalAlign=middle;spacingLeft=6;fontSize=10;fontColor=#115E59;fontStyle=1;" vertex="1" parent="tbl_facility_room">
+          <mxGeometry y="50" width="240" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- 6. TENANT (PENGHUNI) -->
+        <!-- ========================================== -->
+        <mxCell id="tbl_tenant" value="Tenant (Penghuni Kost)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;whiteSpace=wrap;fillColor=#0284C7;fontColor=#FFFFFF;strokeColor=#0369A1;rounded=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="840" y="140" width="290" height="420" as="geometry" />
+        </mxCell>
+        <mxCell id="t_col_1" value="+ id: String (UUID) [PK]" style="text;strokeColor=none;fillColor=#F0F9FF;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;fontColor=#0C4A6E;" vertex="1" parent="tbl_tenant">
+          <mxGeometry y="30" width="290" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t_col_2" value="+ roomId: String (UUID) [FK]" style="text;strokeColor=none;fillColor=#E0F2FE;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;fontColor=#0369A1;" vertex="1" parent="tbl_tenant">
+          <mxGeometry y="56" width="290" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t_col_3" value="+ name: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_tenant">
+          <mxGeometry y="82" width="290" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t_col_4" value="+ email: String?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_tenant">
+          <mxGeometry y="108" width="290" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t_col_5" value="+ password: String? (Hashed Portal Auth)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_tenant">
+          <mxGeometry y="134" width="290" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t_col_6" value="+ phone: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_tenant">
+          <mxGeometry y="160" width="290" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t_col_7" value="+ nik: String [UQ]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_tenant">
+          <mxGeometry y="186" width="290" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t_col_8" value="+ gender: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_tenant">
+          <mxGeometry y="212" width="290" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t_col_9" value="+ address: Text" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_tenant">
+          <mxGeometry y="238" width="290" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t_col_10" value="+ joinDate: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_tenant">
+          <mxGeometry y="264" width="290" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t_col_11" value="+ leaveDate: DateTime?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_tenant">
+          <mxGeometry y="290" width="290" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t_col_12" value="+ photo: String? / ktpPhoto: String?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_tenant">
+          <mxGeometry y="316" width="290" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t_col_13" value="+ status: TenantStatus (AKTIF | TIDAK_AKTIF)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_tenant">
+          <mxGeometry y="342" width="290" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t_col_14" value="+ createdAt: DateTime / updatedAt: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#64748B;" vertex="1" parent="tbl_tenant">
+          <mxGeometry y="368" width="290" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- 7. PAYMENT (TAGIHAN & PEMBAYARAN) -->
+        <!-- ========================================== -->
+        <mxCell id="tbl_payment" value="Payment (Tagihan Sewa)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;whiteSpace=wrap;fillColor=#2563EB;fontColor=#FFFFFF;strokeColor=#1D4ED8;rounded=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="140" width="310" height="475" as="geometry" />
+        </mxCell>
+        <mxCell id="p_col_1" value="+ id: String (UUID) [PK]" style="text;strokeColor=none;fillColor=#EFF6FF;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;fontColor=#1E3A8A;" vertex="1" parent="tbl_payment">
+          <mxGeometry y="30" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_col_2" value="+ tenantId: String (UUID) [FK]" style="text;strokeColor=none;fillColor=#DBEAFE;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;fontColor=#1E40AF;" vertex="1" parent="tbl_payment">
+          <mxGeometry y="56" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_col_3" value="+ month: Int / year: Int (Periode Sewa)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_payment">
+          <mxGeometry y="82" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_col_4" value="+ durationMonth: Int (default: 1)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_payment">
+          <mxGeometry y="108" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_col_5" value="+ periodLabel: String? (Contoh: Jan-Mar 2026)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_payment">
+          <mxGeometry y="134" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_col_6" value="+ amount: Float (Total Kewajiban Tagihan)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;fontStyle=1;" vertex="1" parent="tbl_payment">
+          <mxGeometry y="160" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_col_7" value="+ paidAmount: Float (Total Sudah Dibayar)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_payment">
+          <mxGeometry y="186" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_col_8" value="+ paymentDate: DateTime?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_payment">
+          <mxGeometry y="212" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_col_9" value="+ method: String? (Transfer, Cash, QRIS)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_payment">
+          <mxGeometry y="238" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_col_10" value="+ status: PaymentStatus (LUNAS | SEBAGIAN | ...)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;fontStyle=1;" vertex="1" parent="tbl_payment">
+          <mxGeometry y="264" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_col_11" value="+ proofUrl: String? (Bukti Transfer Lunas)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_payment">
+          <mxGeometry y="290" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_col_12" value="+ invoiceNumber: String? [UQ]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_payment">
+          <mxGeometry y="316" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_col_13" value="+ invoiceUrl: String? / invoiceSentAt: DateTime?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_payment">
+          <mxGeometry y="342" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_col_14" value="+ lateFee: Float (Denda Keterlambatan)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_payment">
+          <mxGeometry y="368" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_col_15" value="+ createdAt: DateTime / updatedAt: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#64748B;" vertex="1" parent="tbl_payment">
+          <mxGeometry y="394" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_col_16" value="[Index: tenantId, month, year]" style="text;strokeColor=none;fillColor=#FEF3C7;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#92400E;fontStyle=2;" vertex="1" parent="tbl_payment">
+          <mxGeometry y="420" width="310" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- 8. PAYMENT INSTALLMENT (CICILAN) -->
+        <!-- ========================================== -->
+        <mxCell id="tbl_installment" value="PaymentInstallment (Riwayat Cicilan)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;whiteSpace=wrap;fillColor=#3B82F6;fontColor=#FFFFFF;strokeColor=#1D4ED8;rounded=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="690" width="310" height="205" as="geometry" />
+        </mxCell>
+        <mxCell id="pi_col_1" value="+ id: String (UUID) [PK]" style="text;strokeColor=none;fillColor=#EFF6FF;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;fontColor=#1E3A8A;" vertex="1" parent="tbl_installment">
+          <mxGeometry y="30" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pi_col_2" value="+ paymentId: String (UUID) [FK]" style="text;strokeColor=none;fillColor=#DBEAFE;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;fontColor=#1E40AF;" vertex="1" parent="tbl_installment">
+          <mxGeometry y="56" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pi_col_3" value="+ amount: Float (Nominal Cicilan Masuk)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;fontStyle=1;" vertex="1" parent="tbl_installment">
+          <mxGeometry y="82" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pi_col_4" value="+ paymentDate: DateTime (Tanggal Bayar)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_installment">
+          <mxGeometry y="108" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pi_col_5" value="+ method: String? / proofUrl: String?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_installment">
+          <mxGeometry y="134" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pi_col_6" value="+ receiptUrl: String? (Kuitansi PDF) / createdAt" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#64748B;" vertex="1" parent="tbl_installment">
+          <mxGeometry y="160" width="310" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- 9. EXPENSE (PENGELUARAN) -->
+        <!-- ========================================== -->
+        <mxCell id="tbl_expense" value="Expense (Pengeluaran Operasional)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;whiteSpace=wrap;fillColor=#D97706;fontColor=#FFFFFF;strokeColor=#B45309;rounded=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="770" width="280" height="235" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_col_1" value="+ id: String (UUID) [PK]" style="text;strokeColor=none;fillColor=#FFFBEB;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;fontColor=#78350F;" vertex="1" parent="tbl_expense">
+          <mxGeometry y="30" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_col_2" value="+ title: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_expense">
+          <mxGeometry y="56" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_col_3" value="+ amount: Float" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;fontStyle=1;" vertex="1" parent="tbl_expense">
+          <mxGeometry y="82" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_col_4" value="+ category: String (Listrik, Air, WiFi, dll)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_expense">
+          <mxGeometry y="108" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_col_5" value="+ date: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_expense">
+          <mxGeometry y="134" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_col_6" value="+ description: Text?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_expense">
+          <mxGeometry y="160" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_col_7" value="+ createdAt: DateTime / updatedAt: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#64748B;" vertex="1" parent="tbl_expense">
+          <mxGeometry y="186" width="280" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- 10. SYSTEM SETTING -->
+        <!-- ========================================== -->
+        <mxCell id="tbl_system_setting" value="SystemSetting (Pengaturan Pengingat &amp; Sistem)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;whiteSpace=wrap;fillColor=#475569;fontColor=#FFFFFF;strokeColor=#334155;rounded=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="840" y="770" width="290" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="ss_col_1" value="+ id: String (UUID) [PK]" style="text;strokeColor=none;fillColor=#F8FAFC;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;fontColor=#0F172A;" vertex="1" parent="tbl_system_setting">
+          <mxGeometry y="30" width="290" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ss_col_2" value="+ key: String [UQ] (e.g. reminder_days_before)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;fontStyle=1;" vertex="1" parent="tbl_system_setting">
+          <mxGeometry y="56" width="290" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ss_col_3" value="+ value: Text (JSON / String Nilai Pengaturan)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#1E293B;" vertex="1" parent="tbl_system_setting">
+          <mxGeometry y="82" width="290" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ss_col_4" value="+ updatedAt: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#64748B;" vertex="1" parent="tbl_system_setting">
+          <mxGeometry y="108" width="290" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- RELASI & KONEKSI KARDINALITAS (CROW'S FOOT) -->
+        <!-- ========================================== -->
+
+        <!-- 1. User (1) to (N) ActivityLog -->
+        <mxCell id="rel_user_activity" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;startArrow=ERone;endArrow=ERmany;strokeWidth=2;strokeColor=#6366F1;fontSize=11;fontStyle=1;fontColor=#4338CA;" edge="1" parent="1" source="tbl_user" target="tbl_activity_log">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 2. User (1) to (N) Notification -->
+        <mxCell id="rel_user_notif" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;startArrow=ERone;endArrow=ERmany;strokeWidth=2;strokeColor=#6366F1;fontSize=11;fontStyle=1;fontColor=#4338CA;" edge="1" parent="1" source="tbl_activity_log" target="tbl_notification">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 3. Room (1) to (N) Tenant -->
+        <mxCell id="rel_room_tenant" value="1 : N&#xa;(1 Kamar memiliki banyak riwayat penghuni)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;startArrow=ERone;endArrow=ERmany;strokeWidth=2;strokeColor=#0D9488;fontSize=11;fontStyle=1;fontColor=#0F766E;" edge="1" parent="1" source="tbl_room" target="tbl_tenant">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 4. Room (N) to (N) Facility via Junction -->
+        <mxCell id="rel_room_junction" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;startArrow=ERone;endArrow=ERmany;strokeWidth=2;strokeColor=#0D9488;fontSize=10;fontColor=#0F766E;" edge="1" parent="1" source="tbl_room" target="tbl_facility_room">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="rel_facility_junction" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;startArrow=ERone;endArrow=ERmany;strokeWidth=2;strokeColor=#0D9488;fontSize=10;fontColor=#0F766E;" edge="1" parent="1" source="tbl_facility" target="tbl_facility_room">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 5. Tenant (1) to (N) Payment -->
+        <mxCell id="rel_tenant_payment" value="1 : N&#xa;(1 Penghuni memiliki banyak tagihan bulanan)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;startArrow=ERone;endArrow=ERmany;strokeWidth=2;strokeColor=#0284C7;fontSize=11;fontStyle=1;fontColor=#0369A1;" edge="1" parent="1" source="tbl_tenant" target="tbl_payment">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 6. Payment (1) to (N) PaymentInstallment (Cicilan) -->
+        <mxCell id="rel_payment_installment" value="1 : N (Cascade Delete)&#xa;(1 Tagihan dapat dicicil bertahap)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;startArrow=ERone;endArrow=ERmany;strokeWidth=2;strokeColor=#2563EB;fontSize=11;fontStyle=1;fontColor=#1D4ED8;" edge="1" parent="1" source="tbl_payment" target="tbl_installment">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
