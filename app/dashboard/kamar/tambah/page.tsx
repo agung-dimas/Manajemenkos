@@ -3,6 +3,7 @@ import { addRoom } from "@/src/actions/kamar.action"
 import { Button } from "@/components/ui/button"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { Input } from "@/components/ui/input"
+import { RupiahInput } from "@/components/ui/rupiah-input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import {
@@ -42,7 +43,7 @@ export default function TambahKamarPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="price">Harga Sewa (Per Bulan)</Label>
-            <Input id="price" name="price" type="number" placeholder="1500000" required />
+            <RupiahInput id="price" name="price" placeholder="1.500.000" required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="status">Status Kamar</Label>

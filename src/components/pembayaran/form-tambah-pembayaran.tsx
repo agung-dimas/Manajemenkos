@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Calendar, CreditCard, Sparkles, Loader2 } from "lucide-react"
 import { MonthStepper } from "@/components/ui/month-stepper"
+import { RupiahInput } from "@/components/ui/rupiah-input"
 
 interface TenantWithRoom {
   id: string
@@ -210,13 +211,12 @@ export function FormTambahPembayaran({
               </button>
             )}
           </div>
-          <Input
+          <RupiahInput
             id="amount"
             name="amount"
-            type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            placeholder="Misal: 1500000"
+            placeholder="Misal: 1.500.000"
             required
             className="text-base font-semibold"
           />

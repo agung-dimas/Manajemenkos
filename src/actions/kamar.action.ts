@@ -7,11 +7,12 @@ import { createRoom, deleteRoom, updateRoom } from "@/src/repositories/kamar.rep
 import { RoomStatus } from "@prisma/client"
 
 import { getIconForFacility } from "@/src/lib/facilities"
+import { parseCurrency } from "@/lib/utils"
 
 export async function addRoom(formData: FormData) {
   const number = formData.get("number") as string
   const floor = parseInt(formData.get("floor") as string)
-  const price = parseFloat(formData.get("price") as string)
+  const price = parseCurrency(formData.get("price"))
   const size = formData.get("size") as string
   const description = formData.get("description") as string
   const status = formData.get("status") as RoomStatus
@@ -79,7 +80,7 @@ export async function addRoom(formData: FormData) {
 export async function editRoom(id: string, formData: FormData) {
   const number = formData.get("number") as string
   const floor = parseInt(formData.get("floor") as string)
-  const price = parseFloat(formData.get("price") as string)
+  const price = parseCurrency(formData.get("price"))
   const size = formData.get("size") as string
   const description = formData.get("description") as string
   const status = formData.get("status") as RoomStatus

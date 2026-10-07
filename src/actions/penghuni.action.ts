@@ -32,6 +32,7 @@ import { generateReceiptPDF } from "@/src/lib/receipt"
 import { getPeriodLabel, getPeriodDateRange, MONTHS } from "@/src/lib/period"
 import { sendReceiptEmail } from "@/src/lib/email"
 import { sendWhatsAppMessage } from "@/src/lib/whatsapp"
+import { parseCurrency } from "@/lib/utils"
 
 export async function addTenant(formData: FormData) {
   const name = formData.get("name") as string
@@ -46,7 +47,7 @@ export async function addTenant(formData: FormData) {
 
   // Data Pembayaran Awal (Prinsip Bayar Dulu Baru Nempatin)
   const durationMonth = parseInt(formData.get("durationMonth") as string) || 1
-  const amount = parseFloat(formData.get("amount") as string) || 0
+  const amount = parseCurrency(formData.get("amount"))
   const method = (formData.get("method") as string) || "Tunai"
   const periodLabelCustom = formData.get("periodLabel") as string
 

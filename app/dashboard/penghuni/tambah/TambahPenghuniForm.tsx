@@ -13,6 +13,7 @@ import { getPeriodLabel, getPeriodDateRange } from "@/src/lib/period"
 import { FacilityIcon } from "@/components/kamar/FacilityIcon"
 import { getIconForFacility } from "@/src/lib/facilities"
 import { MonthStepper } from "@/components/ui/month-stepper"
+import { RupiahInput } from "@/components/ui/rupiah-input"
 
 interface Room {
   id: string
@@ -348,12 +349,12 @@ export function TambahPenghuniForm({ availableRooms, defaultRoomId }: TambahPeng
                   ({formatCurrency(basePrice)} × {activeDuration} bln)
                 </span>
               </div>
-              <Input
+              <RupiahInput
                 id="amount"
                 name="amount"
-                type="number"
                 value={displayAmount}
                 onChange={(e) => setCustomAmount(e.target.value)}
+                placeholder="0"
                 required
                 className="font-bold text-base text-primary"
               />

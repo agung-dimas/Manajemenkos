@@ -4,6 +4,7 @@ import { removePayment, markAsPaid, resendInvoice, addInstallment } from "@/src/
 import { Button } from "@/components/ui/button"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { Input } from "@/components/ui/input"
+import { RupiahInput } from "@/components/ui/rupiah-input"
 import { Plus, Trash2, ExternalLink, CheckCircle, Send, Banknote } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -96,7 +97,7 @@ export default async function PembayaranPage() {
                           <form action={addInstallment} className="flex gap-1 items-center bg-muted/30 p-1 rounded-md border border-border/50">
                             <input type="hidden" name="paymentId" value={payment.id} />
                             <input type="hidden" name="method" value="Transfer" />
-                            <Input name="amount" type="number" placeholder="Nominal Cicil" className="w-24 h-8 text-xs px-2" required min="1" max={payment.amount - payment.paidAmount} />
+                            <RupiahInput name="amount" placeholder="Nominal" containerClassName="w-28" className="h-8 text-xs" required />
                             <SubmitButton type="submit" size="sm" variant="ghost" pendingText="" className="h-8 px-2 text-orange-600 hover:text-orange-700 hover:bg-orange-50" title="Simpan Cicilan">
                               <Banknote className="h-3.5 w-3.5" />
                             </SubmitButton>
@@ -203,7 +204,7 @@ export default async function PembayaranPage() {
                   <form action={addInstallment} className="flex gap-2 items-center bg-muted/30 p-2 rounded-md border border-border/50">
                     <input type="hidden" name="paymentId" value={payment.id} />
                     <input type="hidden" name="method" value="Transfer" />
-                    <Input name="amount" type="number" placeholder="Nominal Cicil" className="h-9 flex-1 text-sm" required min="1" max={payment.amount - payment.paidAmount} />
+                    <RupiahInput name="amount" placeholder="Nominal Cicil" containerClassName="flex-1" className="h-9 text-sm" required />
                     <SubmitButton type="submit" size="sm" variant="secondary" pendingText="Menyimpan..." className="h-9 text-orange-600 hover:text-orange-700 hover:bg-orange-100">
                       Cicil
                     </SubmitButton>

@@ -2,6 +2,7 @@ import Link from "next/link"
 import { addExpense } from "@/src/actions/pengeluaran.action"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { RupiahInput } from "@/components/ui/rupiah-input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -44,7 +45,7 @@ export default function TambahPengeluaranPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="amount">Nominal Pengeluaran (Rp)</Label>
-            <Input id="amount" name="amount" type="number" placeholder="Misal: 500000" required />
+            <RupiahInput id="amount" name="amount" placeholder="Misal: 500.000" required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="date">Tanggal Pengeluaran</Label>

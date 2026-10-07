@@ -10,6 +10,7 @@ import { generateReceiptPDF } from "@/src/lib/receipt"
 import { generateInvoicePDF } from "@/src/lib/invoice"
 import { getPeriodLabel } from "@/src/lib/period"
 import { sendReceiptEmail, sendInvoiceEmail, sendInstallmentReceiptEmail } from "@/src/lib/email"
+import { parseCurrency } from "@/lib/utils"
 
 // Array helper untuk mengubah angka bulan menjadi nama bulan
 const MONTHS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
@@ -20,7 +21,7 @@ export async function addPayment(formData: FormData) {
   const year = parseInt(formData.get("year") as string)
   const durationMonth = parseInt(formData.get("durationMonth") as string) || 1
   const periodLabel = (formData.get("periodLabel") as string) || getPeriodLabel(month, year, durationMonth)
-  const amount = parseFloat(formData.get("amount") as string)
+  const amount = parseCurrency(formData.get("amount"))
   const paymentDateStr = formData.get("paymentDate") as string
   const method = formData.get("method") as string
   const status = formData.get("status") as PaymentStatus
@@ -317,7 +318,7 @@ export async function resendInvoice(id: string) {
 
 export async function addInstallment(formData: FormData) {
   const paymentId = formData.get("paymentId") as string
-  const amount = parseFloat(formData.get("amount") as string)
+  const amount = parseCurrency(formData.get("amount"))
   const method = formData.get("method") as string
   const proofFile = formData.get("proofUrl") as File
 

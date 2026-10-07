@@ -3,10 +3,11 @@
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { createExpense, deleteExpense } from "@/src/repositories/pengeluaran.repo"
+import { parseCurrency } from "@/lib/utils"
 
 export async function addExpense(formData: FormData) {
   const title = formData.get("title") as string
-  const amount = parseFloat(formData.get("amount") as string)
+  const amount = parseCurrency(formData.get("amount"))
   const category = formData.get("category") as string
   const dateStr = formData.get("date") as string
   const description = formData.get("description") as string
