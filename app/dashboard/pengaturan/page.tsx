@@ -13,6 +13,7 @@ import { getFonnteDeviceStatus } from "@/src/actions/whatsapp.action"
 import { getResendStatus, sendTestEmail } from "@/src/actions/email.action"
 import { getCurrentUser, updateUserProfile } from "@/src/actions/auth"
 import { ReminderSettingsCard } from "@/src/components/pengaturan/ReminderSettingsCard"
+import { getKostSettings, saveKostSettings, getBankSettings, saveBankSettings } from "@/src/actions/settings.action"
 
 export default function PengaturanPage() {
   const [activeTab, setActiveTab] = useState("menu")
@@ -90,30 +91,9 @@ export default function PengaturanPage() {
     role: "PETUGAS"
   })
 
-  // Load profile from database on mount
-  useEffect(() => {
-    async function loadProfile() {
-      try {
-        const user = await getCurrentUser()
-        if (user) {
-          setProfile({
-            name: user.name,
-            email: user.email,
-            role: user.role
-          })
-        }
-      } catch (err) {
-        console.error("Gagal memuat profil pengguna:", err)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    loadProfile()
-  }, [])
-
   const [kostInfo, setKostInfo] = useState({
-    name: "KOST BUWATI",
-    phone: "081234567890",
+    name: "KOST BU WATI",
+    phone: "082278557501",
     address: "Jl. Margonda Raya No. 100, Depok, Jawa Barat",
     rules: "1. Jam malam maksimal pukul 23:00 WIB\n2. Tamu menginap harus melapor petugas\n3. Dilarang merokok di area lorong kamar"
   })
@@ -121,8 +101,48 @@ export default function PengaturanPage() {
   const [bankInfo, setBankInfo] = useState({
     bankName: "Bank Central Asia (BCA)",
     accountNumber: "8001298453",
-    accountHolder: "KOST BUWATI"
+    accountHolder: "KOST BU WATI"
   })
+
+  // Load profile and settings from database on mount
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const [user, kost, bank] = await Promise.all([
+          getCurrentUser(),
+          getKostSettings(),
+          getBankSettings()
+        ])
+        if (user) {
+          setProfile({
+            name: user.name,
+            email: user.email,
+            role: user.role
+          })
+        }
+        if (kost) {
+          setKostInfo({
+            name: kost.name,
+            phone: kost.phone,
+            address: kost.address,
+            rules: kost.rules
+          })
+        }
+        if (bank) {
+          setBankInfo({
+            bankName: bank.bankName,
+            accountNumber: bank.accountNumber,
+            accountHolder: bank.accountHolder
+          })
+        }
+      } catch (err) {
+        console.error("Gagal memuat profil atau pengaturan:", err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadSettings()
+  }, [])
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -130,21 +150,43 @@ export default function PengaturanPage() {
     setSuccessMsg(null)
 
     try {
-      if (activeTab === "profile" || activeTab === "menu") {
-        const res = await updateUserProfile(profile.name)
-        if (res?.error) {
-          alert(res.error)
+      if (activeTab === "profile") {
+        const [resProfile, resKost] = await Promise.all([
+          updateUserProfile(profile.name),
+          saveKostSettings({ phone: kostInfo.phone })
+        ])
+        if (resProfile?.error) {
+          alert(resProfile.error)
+        } else if (!resKost.success) {
+          alert(resKost.error || "Gagal menyimpan nomor operasional.")
         } else {
-          setSuccessMsg("Profil berhasil disimpan ke database!")
+          setSuccessMsg("Profil dan nomor telepon operasional berhasil disimpan ke database!")
+        }
+      } else if (activeTab === "kost") {
+        const res = await saveKostSettings(kostInfo)
+        if (!res.success) {
+          alert(res.error || "Gagal menyimpan detail kost.")
+        } else {
+          setSuccessMsg("Informasi kost dan nomor operasional berhasil disimpan ke database!")
+        }
+      } else if (activeTab === "bank") {
+        const res = await saveBankSettings(bankInfo)
+        if (!res.success) {
+          alert(res.error || "Gagal menyimpan informasi rekening bank.")
+        } else {
+          setSuccessMsg("Metode rekening bank berhasil disimpan ke database!")
         }
       } else {
-        // Mock save for other settings
-        await new Promise((resolve) => setTimeout(resolve, 800))
-        setSuccessMsg("Pengaturan berhasil disimpan secara lokal!")
+        // Fallback untuk mode menu / umum
+        await Promise.all([
+          updateUserProfile(profile.name),
+          saveKostSettings(kostInfo)
+        ])
+        setSuccessMsg("Pengaturan berhasil disimpan ke database!")
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err)
-      alert("Terjadi kesalahan saat menyimpan pengaturan.")
+      alert("Terjadi kesalahan saat menyimpan pengaturan: " + (err?.message || ""))
     } finally {
       setIsSaving(false)
       setTimeout(() => setSuccessMsg(null), 3000)
@@ -330,6 +372,20 @@ export default function PengaturanPage() {
                         />
                       </div>
                       <div className="grid gap-2">
+                        <Label htmlFor="prof-phone">Nomor Telepon Operasional / WhatsApp (Untuk Calon Penyewa)</Label>
+                        <Input
+                          id="prof-phone"
+                          type="tel"
+                          placeholder="Contoh: 082278557501"
+                          value={kostInfo.phone}
+                          onChange={(e) => setKostInfo({ ...kostInfo, phone: e.target.value })}
+                          required
+                        />
+                        <p className="text-[11px] text-muted-foreground">
+                          Nomor ini otomatis terhubung ke tombol WhatsApp calon penyewa di landing page (reservasi kamar & survey lokasi).
+                        </p>
+                      </div>
+                      <div className="grid gap-2">
                         <Label htmlFor="prof-role">Hak Akses Sistem</Label>
                         <Select value={profile.role} disabled>
                           <SelectTrigger id="prof-role" className="bg-zinc-50 dark:bg-zinc-900 cursor-not-allowed">
@@ -380,13 +436,16 @@ export default function PengaturanPage() {
                         />
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor="kost-phone">Nomor Telepon Operasional</Label>
+                        <Label htmlFor="kost-phone">Nomor Telepon Operasional (WhatsApp Calon Penyewa)</Label>
                         <Input
                           id="kost-phone"
                           value={kostInfo.phone}
                           onChange={(e) => setKostInfo({ ...kostInfo, phone: e.target.value })}
                           required
                         />
+                        <p className="text-[11px] text-muted-foreground">
+                          Nomor ini otomatis terhubung ke tombol WhatsApp calon penyewa di landing page (reservasi kamar & survey lokasi).
+                        </p>
                       </div>
                       <div className="grid gap-2">
                         <Label htmlFor="kost-address">Alamat Kost</Label>

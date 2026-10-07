@@ -13,9 +13,15 @@ import {
 
 interface LocationSectionProps {
   adminPhone?: string
+  kostName?: string
+  kostAddress?: string
 }
 
-export function LocationSection({ adminPhone = "6282278557501" }: LocationSectionProps) {
+export function LocationSection({
+  adminPhone = "6282278557501",
+  kostName = "Kost Bu Wati",
+  kostAddress = "Jl. Margonda Raya No. 100, Depok, Jawa Barat"
+}: LocationSectionProps) {
   const cleanPhone = adminPhone.replace(/[^0-9]/g, "").replace(/^0/, "62")
 
   return (
@@ -46,7 +52,7 @@ export function LocationSection({ adminPhone = "6282278557501" }: LocationSectio
             <div className="space-y-6">
               <div className="space-y-1.5">
                 <h3 className="text-xl font-bold text-foreground">
-                  Kost Bu Wati
+                  {kostName}
                 </h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   Hunian kost harian, bulanan, dan tahunan yang nyaman, asri, dan terpercaya.
@@ -61,7 +67,7 @@ export function LocationSection({ adminPhone = "6282278557501" }: LocationSectio
                   <div>
                     <span className="font-semibold text-foreground block">Alamat Lokasi:</span>
                     <span className="text-muted-foreground text-xs leading-relaxed">
-                      Jl. Anggrek No. 12, Kelurahan Sukajadi, Kota Bandung, Jawa Barat (Dekat Kampus & Perkantoran)
+                      {kostAddress}
                     </span>
                   </div>
                 </div>

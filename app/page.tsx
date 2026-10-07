@@ -7,6 +7,7 @@ import { ReservationGuide } from "@/components/landing/ReservationGuide"
 import { FacilityHighlights } from "@/components/landing/FacilityHighlights"
 import { LocationSection } from "@/components/landing/LocationSection"
 import { LandingFooter } from "@/components/landing/LandingFooter"
+import { getKostSettings } from "@/src/actions/settings.action"
 
 export const metadata: Metadata = {
   title: "Kost Bu Wati — Hunian Kost Bersih, Nyaman & Strategis",
@@ -18,22 +19,25 @@ export const metadata: Metadata = {
 export const revalidate = 60
 
 export default async function HomePage() {
-  const rooms = await prisma.room.findMany({
-    include: {
-      facilities: {
-        select: {
-          id: true,
-          name: true,
-          icon: true
+  const [rooms, kostSettings] = await Promise.all([
+    prisma.room.findMany({
+      include: {
+        facilities: {
+          select: {
+            id: true,
+            name: true,
+            icon: true
+          }
+        },
+        tenants: {
+          where: { status: "AKTIF" },
+          select: { id: true, name: true }
         }
       },
-      tenants: {
-        where: { status: "AKTIF" },
-        select: { id: true, name: true }
-      }
-    },
-    orderBy: { number: "asc" }
-  })
+      orderBy: { number: "asc" }
+    }),
+    getKostSettings()
+  ])
 
   // Format data kamar untuk komponen katalog
   const formattedRooms = rooms.map((r) => ({
@@ -54,8 +58,8 @@ export default async function HomePage() {
     ? Math.min(...formattedRooms.map((r) => r.price))
     : 500000
 
-  // Nomor kontak default WhatsApp pengelola
-  const adminPhone = "6281234567890"
+  // Nomor kontak WhatsApp dan info kost pengelola dari database
+  const adminPhone = kostSettings.phone || "6282278557501"
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-emerald-100 selection:text-emerald-900 dark:selection:bg-emerald-900/60 dark:selection:text-emerald-100">
@@ -79,6 +83,8 @@ export default async function HomePage() {
 
         <LocationSection
           adminPhone={adminPhone}
+          kostName={kostSettings.name}
+          kostAddress={kostSettings.address}
         />
       </main>
 

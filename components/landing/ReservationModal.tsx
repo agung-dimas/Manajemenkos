@@ -42,7 +42,7 @@ export function ReservationModal({
   room,
   isOpen,
   onClose,
-  adminPhone = "62822785557501"
+  adminPhone = "6282278557501"
 }: ReservationModalProps) {
   const [name, setName] = useState("")
   const [phone, setPhone] = useState("")

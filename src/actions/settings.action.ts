@@ -157,3 +157,180 @@ export async function triggerReminderTest(force: boolean = true) {
   }
 }
 
+export interface KostSettings {
+  name: string
+  phone: string
+  address: string
+  rules: string
+}
+
+export interface BankSettings {
+  bankName: string
+  accountNumber: string
+  accountHolder: string
+}
+
+const DEFAULT_KOST_SETTINGS: KostSettings = {
+  name: "KOST BU WATI",
+  phone: "082278557501",
+  address: "Jl. Margonda Raya No. 100, Depok, Jawa Barat",
+  rules: "1. Jam malam maksimal pukul 23:00 WIB\n2. Tamu menginap harus melapor petugas\n3. Dilarang merokok di area lorong kamar",
+}
+
+const DEFAULT_BANK_SETTINGS: BankSettings = {
+  bankName: "Bank Central Asia (BCA)",
+  accountNumber: "8001298453",
+  accountHolder: "KOST BU WATI",
+}
+
+export async function getKostSettings(): Promise<KostSettings> {
+  try {
+    const settings = await prisma.systemSetting.findMany({
+      where: {
+        key: {
+          in: ["kost_name", "kost_phone", "kost_address", "kost_rules"],
+        },
+      },
+    })
+
+    const map = new Map(settings.map((s) => [s.key, s.value]))
+
+    return {
+      name: map.get("kost_name") || DEFAULT_KOST_SETTINGS.name,
+      phone: map.get("kost_phone") || DEFAULT_KOST_SETTINGS.phone,
+      address: map.get("kost_address") || DEFAULT_KOST_SETTINGS.address,
+      rules: map.has("kost_rules") ? (map.get("kost_rules") as string) : DEFAULT_KOST_SETTINGS.rules,
+    }
+  } catch (err) {
+    console.error("Gagal membaca pengaturan info kost:", err)
+    return DEFAULT_KOST_SETTINGS
+  }
+}
+
+export async function saveKostSettings(data: Partial<KostSettings>) {
+  try {
+    const upserts = []
+
+    if (data.name !== undefined) {
+      upserts.push(
+        prisma.systemSetting.upsert({
+          where: { key: "kost_name" },
+          update: { value: data.name },
+          create: { key: "kost_name", value: data.name },
+        })
+      )
+    }
+
+    if (data.phone !== undefined) {
+      upserts.push(
+        prisma.systemSetting.upsert({
+          where: { key: "kost_phone" },
+          update: { value: data.phone },
+          create: { key: "kost_phone", value: data.phone },
+        })
+      )
+    }
+
+    if (data.address !== undefined) {
+      upserts.push(
+        prisma.systemSetting.upsert({
+          where: { key: "kost_address" },
+          update: { value: data.address },
+          create: { key: "kost_address", value: data.address },
+        })
+      )
+    }
+
+    if (data.rules !== undefined) {
+      upserts.push(
+        prisma.systemSetting.upsert({
+          where: { key: "kost_rules" },
+          update: { value: data.rules },
+          create: { key: "kost_rules", value: data.rules },
+        })
+      )
+    }
+
+    if (upserts.length > 0) {
+      await prisma.$transaction(upserts)
+    }
+
+    revalidatePath("/")
+    revalidatePath("/dashboard/pengaturan")
+    return { success: true }
+  } catch (err: any) {
+    console.error("Gagal menyimpan pengaturan info kost:", err)
+    return { success: false, error: err.message || "Gagal menyimpan info kost." }
+  }
+}
+
+export async function getBankSettings(): Promise<BankSettings> {
+  try {
+    const settings = await prisma.systemSetting.findMany({
+      where: {
+        key: {
+          in: ["bank_name", "bank_account_number", "bank_account_holder"],
+        },
+      },
+    })
+
+    const map = new Map(settings.map((s) => [s.key, s.value]))
+
+    return {
+      bankName: map.get("bank_name") || DEFAULT_BANK_SETTINGS.bankName,
+      accountNumber: map.get("bank_account_number") || DEFAULT_BANK_SETTINGS.accountNumber,
+      accountHolder: map.get("bank_account_holder") || DEFAULT_BANK_SETTINGS.accountHolder,
+    }
+  } catch (err) {
+    console.error("Gagal membaca pengaturan rekening bank:", err)
+    return DEFAULT_BANK_SETTINGS
+  }
+}
+
+export async function saveBankSettings(data: Partial<BankSettings>) {
+  try {
+    const upserts = []
+
+    if (data.bankName !== undefined) {
+      upserts.push(
+        prisma.systemSetting.upsert({
+          where: { key: "bank_name" },
+          update: { value: data.bankName },
+          create: { key: "bank_name", value: data.bankName },
+        })
+      )
+    }
+
+    if (data.accountNumber !== undefined) {
+      upserts.push(
+        prisma.systemSetting.upsert({
+          where: { key: "bank_account_number" },
+          update: { value: data.accountNumber },
+          create: { key: "bank_account_number", value: data.accountNumber },
+        })
+      )
+    }
+
+    if (data.accountHolder !== undefined) {
+      upserts.push(
+        prisma.systemSetting.upsert({
+          where: { key: "bank_account_holder" },
+          update: { value: data.accountHolder },
+          create: { key: "bank_account_holder", value: data.accountHolder },
+        })
+      )
+    }
+
+    if (upserts.length > 0) {
+      await prisma.$transaction(upserts)
+    }
+
+    revalidatePath("/dashboard/pengaturan")
+    return { success: true }
+  } catch (err: any) {
+    console.error("Gagal menyimpan pengaturan bank:", err)
+    return { success: false, error: err.message || "Gagal menyimpan pengaturan bank." }
+  }
+}
+
+
