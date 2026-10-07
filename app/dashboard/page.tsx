@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getDashboardStats, getRevenueChartData } from "@/src/repositories/dashboard.repo"
 import { RevenueChart } from "@/src/components/dashboard/revenue-chart"
 import { BedDouble, Users, Wallet, Home, ArrowDownRight, TrendingUp } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 export default async function DashboardPage() {
   // Fetch data dari database (berjalan di Server)
@@ -19,25 +20,35 @@ export default async function DashboardPage() {
       {/* Grid Statistik Utama */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {/* Card 1: Laba Bersih */}
-        <Card className="border-l-4 border-l-green-500 shadow-sm">
+        <Card className={cn(
+          "border-l-4 shadow-sm",
+          netProfit >= 0 ? "border-l-emerald-500" : "border-l-rose-500"
+        )}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Laba Bersih Bulan Ini</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-500" />
+            {netProfit >= 0 ? (
+              <TrendingUp className="h-4 w-4 text-emerald-500" />
+            ) : (
+              <ArrowDownRight className="h-4 w-4 text-rose-500" />
+            )}
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+            <div className={cn(
+              "text-2xl font-bold",
+              netProfit >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+            )}>
               {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(netProfit)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Pendapatan dikurangi pengeluaran
+              Pendapatan sewa (prorata) dikurangi pengeluaran
             </p>
           </CardContent>
         </Card>
 
-        {/* Card 2: Pendapatan */}
+        {/* Card 2: Pendapatan Sewa Prorata */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Pendapatan</CardTitle>
+            <CardTitle className="text-sm font-medium">Pendapatan Sewa (Prorata)</CardTitle>
             <Wallet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -45,7 +56,7 @@ export default async function DashboardPage() {
               {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(stats.revenue)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Dari tagihan terbayar lunas
+              Hak sewa kamar aktif bulan ini
             </p>
           </CardContent>
         </Card>
