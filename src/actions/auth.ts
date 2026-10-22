@@ -6,8 +6,19 @@ import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import prisma from '@/lib/prisma'
 import { verifyPassword, signTenantSession } from '@/src/lib/tenant-auth'
+import { checkBotId } from 'botid/server'
 
 export async function login(formData: FormData) {
+    // Verifikasi proteksi BotID
+    try {
+        const verification = await checkBotId()
+        if (verification.isBot) {
+            return { error: 'Akses ditolak: Terdeteksi aktivitas bot otomatis.' }
+        }
+    } catch (botErr) {
+        console.warn('BotID verification warning:', botErr)
+    }
+
     const email = (formData.get('email') as string)?.trim()
     const password = (formData.get('password') as string)?.trim()
 
