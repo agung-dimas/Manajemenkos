@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/src/components/theme-provider"
 
 import { Suspense } from "react"
 import { NavigationProgressBar } from "@/components/layout/NavigationProgressBar"
+import { VisitorVerification } from "@/components/security/VisitorVerification"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -27,6 +28,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <VisitorVerification />
           <Suspense fallback={null}>
             <NavigationProgressBar />
           </Suspense>

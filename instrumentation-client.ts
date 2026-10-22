@@ -11,5 +11,10 @@ initBotId({
       path: '/tenant/login',
       method: 'POST',
     },
+    {
+      path: '/api/verify',
+      method: 'POST',
+      advancedOptions: { checkLevel: 'basic' },
+    },
   ],
 });
